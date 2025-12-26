@@ -47,7 +47,7 @@ global.storage = new Store({
   }
 })
 
-import updater from './updater'
+import updater from './updater.js'
 
 const template = [
   {
@@ -177,13 +177,15 @@ const createWindow = () => {
     }
   })
 
-  if (process.env.WEBPACK_DEV_SERVER_URL) {
-    win.loadURL(process.env.WEBPACK_DEV_SERVER_URL)
+  // Vite dev server runs on port 5173 by default
+  if (isDevelopment) {
+    win.loadURL('http://localhost:5173')
     if (!process.env.IS_TEST) win.webContents.openDevTools()
   } else {
-    const { createProtocol } = require('vue-cli-plugin-electron-builder/lib')
-    createProtocol('app')
-    win.loadURL('app://./index.html')
+    // Production: load from dist folder (relative to background.js location)
+    const path = require('path')
+    const indexPath = path.join(__dirname, '../dist/index.html')
+    win.loadFile(indexPath)
     nativeTheme.themeSource = global.storage.get('theme')
   }
   
@@ -338,23 +340,14 @@ ipcMain.handle('FETCH_FILE', async (event, args) => {
   const [year, fileName] = args
   const dataPath = getFilePath(year)
   const filePath = `${dataPath}/${fileName}.json`
-  let file
 
-  // create the file if it does not exist yet
+  // return default data if file doesn't exist (don't create file)
   if (!fs.existsSync(filePath)) {
-    file = fs.promises.mkdir(dataPath, { recursive: true }).then(() => {
-      return fs.promises.writeFile(filePath, getDefaultData()).then(() => {
-        return fs.promises.readFile(filePath, 'utf-8').then((data) => {
-          return JSON.parse(data)
-        })
-      })
-    })
-  } else {
-    file = fs.promises.readFile(filePath, 'utf-8').then(data => JSON.parse(data))
+    return JSON.parse(getDefaultData())
   }
 
-  // return the file
-  return file
+  // return the file if it exists
+  return fs.promises.readFile(filePath, 'utf-8').then(data => JSON.parse(data))
 })
 
 import { Document } from 'flexsearch'
@@ -400,17 +393,32 @@ const retrieveIndex = async () => {
 }
 
 
-ipcMain.handle('SAVE_FILE', (event, args) => {
+ipcMain.handle('SAVE_FILE', async (event, args) => {
   const [year, fileName, content, rating] = args
-  const dataPath = getFilePath(year, fileName)
+  const dataPath = getFilePath(year)
   const filePath = `${dataPath}/${fileName}.json`
   
+  // Ensure directory exists
+  await fs.promises.mkdir(dataPath, { recursive: true })
+  
+  // If content is empty, delete the file if it exists
+  if (isContentEmpty(content)) {
+    if (fs.existsSync(filePath)) {
+      await fs.promises.unlink(filePath)
+      // Remove from search index
+      searchIndex.remove(fileName)
+      await exportIndex()
+    }
+    return
+  }
+
+  // Only save if content exists
   searchIndex.update(fileName, {
     date: fileName, 
     content: tokenizer(content)
   })
 
-  fs.promises.writeFile(
+  await fs.promises.writeFile(
     filePath,
     JSON.stringify({
       content: content,
@@ -418,7 +426,35 @@ ipcMain.handle('SAVE_FILE', (event, args) => {
     })
   )
   
-  exportIndex()
+  await exportIndex()
+})
+
+ipcMain.handle('CHECK_DAYS_WITH_CONTENT', async (event, args) => {
+  const dates = args // array of date strings in YYYY-MM-DD format
+  const daysWithContent = []
+  
+  for (const date of dates) {
+    const year = date.substring(0, 4)
+    const dataPath = getFilePath(year)
+    const filePath = `${dataPath}/${date}.json`
+    
+    if (fs.existsSync(filePath)) {
+      try {
+        const data = await fs.promises.readFile(filePath, 'utf-8')
+        const file = JSON.parse(data)
+        
+        // Check if content is not empty
+        if (!isContentEmpty(file.content)) {
+          daysWithContent.push(date)
+        }
+      } catch (e) {
+        // Skip if file is corrupted or can't be read
+        console.error(`Error reading file ${filePath}:`, e)
+      }
+    }
+  }
+  
+  return daysWithContent
 })
 
 ipcMain.handle('SEARCH', async (event, search) => {
@@ -462,6 +498,18 @@ ipcMain.handle('LOAD_SEARCH_INDEX', async () => {
 const tokenizer = (content) => {
   const cleanedHtml = content.replace(/(<([^>]+)>)/gi, ' ').split(' ')
   return cleanedHtml.filter((word, index, self) => self.indexOf(word) === index)
+}
+
+/**
+ * Checks if content is empty by stripping HTML tags and whitespace
+ * @param {string} content - HTML content string
+ * @returns {boolean} - true if content is empty
+ */
+const isContentEmpty = (content) => {
+  if (!content) return true
+  // Strip HTML tags and check if remaining text is empty
+  const textOnly = content.replace(/(<([^>]+)>)/gi, '').trim()
+  return textOnly.length === 0
 }
 
 ipcMain.handle('REINDEX_ALL', async () => repairSearchDatabase())

@@ -8,9 +8,9 @@
 </template>
 
 <script>
-import Layout from './Layout'
-import AppHeader from '@/components/app-header'
-import Editor from '@/components/editor'
+import Layout from './Layout.vue'
+import AppHeader from '@/components/app-header.vue'
+import Editor from '@/components/editor.vue'
 
 import { mapGetters, mapActions } from 'vuex'
 import {

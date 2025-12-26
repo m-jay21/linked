@@ -67,7 +67,7 @@ Please check [Contributing.md](/CONTRIBUTING.md) first before opening a pull req
   <summary>How to run locally</summary>
 
   
-  1. Check your node version, it must be v15 or newer
+  1. Check your node version, it must be v18 or newer (Vite requires Node 18+)
   
   ```
   node --version
@@ -88,14 +88,16 @@ Please check [Contributing.md](/CONTRIBUTING.md) first before opening a pull req
   4. Install project dependencies
   
   ```
-  yarn
+  npm install
   ```
   
-  5. Start the application
+  5. Start the development server
   
   ```
-  yarn electron:serve
+  npm run dev
   ```
+  
+  This will start both the Vite dev server and Electron automatically. No more legacy OpenSSL provider needed!
 </details>
 
 Make sure to follow [@uselinked](https://twitter.com/uselinked) on twitter to get the latest news about the project or feel free to check [github discussions](https://github.com/lostdesign/linked/discussions).

@@ -4,22 +4,21 @@ import VueI18n from 'vue-i18n'
 Vue.use(VueI18n)
 
 export const loadLocaleMessages = () => {
-  const locales = require.context(
-    './locales',
-    true,
-    /[A-Za-z0-9-_,\s]+\.json$/i
-  )
+  // Vite uses import.meta.glob instead of require.context
+  const localeModules = import.meta.glob('./locales/**/*.json', { eager: true })
 
   const messages = {}
 
-  locales.keys().map((key) => {
-    const matched = key.match(/([A-Za-z0-9-_]+)\./i)
-
+  for (const path in localeModules) {
+    const matched = path.match(/([A-Za-z0-9-_]+)\.json$/i)
+    
     if (matched && matched.length > 1) {
       const locale = matched[1]
-      messages[locale] = locales(key)
+      // Vite glob returns the module, extract default export or the module itself
+      const module = localeModules[path]
+      messages[locale] = module.default || module
     }
-  })
+  }
 
   return messages
 }

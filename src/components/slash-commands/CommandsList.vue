@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import { translate } from '../../translation'
+import { translate } from '../../translation.js'
 import HeadingOne from '@/assets/icons/editor/heading-one.svg'
 import HeadingTwo from '@/assets/icons/editor/heading-two.svg'
 import HeadingThree from '@/assets/icons/editor/heading-three.svg'

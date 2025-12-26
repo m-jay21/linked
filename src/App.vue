@@ -16,7 +16,16 @@ import {
   Actions as AppActions
 } from '@/store/modules/app/types'
 
-const { ipcRenderer } = require('electron')
+// Get ipcRenderer lazily (available in Electron renderer with nodeIntegration: true)
+const getIpcRenderer = () => {
+  if (typeof window !== 'undefined' && window.require) {
+    return window.require('electron').ipcRenderer
+  }
+  if (typeof require !== 'undefined') {
+    return require('electron').ipcRenderer
+  }
+  return null
+}
 
 export default {
   methods: {
@@ -33,6 +42,12 @@ export default {
     ...mapGetters('app', [AppGetters.GET_LANGUAGE, AppGetters.GET_THEME])
   },
   mounted() {
+    const ipcRenderer = getIpcRenderer()
+    if (!ipcRenderer) {
+      console.warn('ipcRenderer not available in mounted hook')
+      return
+    }
+
     ipcRenderer.on('open-settings', () => {
       this.$router.push('settings', () => {})
     })

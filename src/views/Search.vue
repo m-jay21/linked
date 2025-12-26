@@ -61,8 +61,18 @@
 
 
 <script>
-import Layout from './Layout'
-const { ipcRenderer } = require('electron')
+import Layout from './Layout.vue'
+// Get ipcRenderer lazily (available in Electron renderer with nodeIntegration: true)
+const getIpcRenderer = () => {
+  if (typeof window !== 'undefined' && window.require) {
+    return window.require('electron').ipcRenderer
+  }
+  if (typeof require !== 'undefined') {
+    return require('electron').ipcRenderer
+  }
+  return null
+}
+
 import { debounce } from 'lodash/function'
 import { mapActions } from 'vuex'
 import { formatDate } from '@/store/modules/calendar/helper'
@@ -85,6 +95,11 @@ export default {
   methods: {
     ...mapActions('calendar', [CalendarActions.SET_DATE]),
     async search() {
+      const ipcRenderer = getIpcRenderer()
+      if (!ipcRenderer) {
+        this.searchResults = {}
+        return
+      }
       this.searchResults = await ipcRenderer.invoke('SEARCH', this.searchTerm)
     },
     _handleKeyDown(event) {

@@ -98,15 +98,15 @@
 
 <script>
 import { version } from '../../package.json'
-import Layout from './Layout'
-import LanguageDropdown from '@/components/language-dropdown'
-import UpdateDropdown from '@/components/update-dropdown'
+import Layout from './Layout.vue'
+import LanguageDropdown from '@/components/language-dropdown.vue'
+import UpdateDropdown from '@/components/update-dropdown.vue'
 import BackIcon from '@/assets/icons/back.svg'
-import ThemeSwitcher from '@/components/theme-switcher'
+import ThemeSwitcher from '@/components/theme-switcher.vue'
 import { reIndexAll } from '@/store/modules/app/helper'
 import { mapActions, mapGetters } from 'vuex'
 import { Actions as AppActions, Getters as AppGetters } from '@/store/modules/app/types'
-import AllowPrerelease from '@/components/settings/allow-prerelease'
+import AllowPrerelease from '@/components/settings/allow-prerelease.vue'
 
 export default {
   components: {

@@ -1,26 +1,30 @@
 <template>
   <div
-    v-if='editor'
     class='px-10 mt-5 text-gray-400 dark:text-gray-500 relative flex-grow'
     @click='_focusEditor'
   >
-    <bubble-menu class='bubble-menu' :editor='editor' v-if='editor'>
-      <button @click='editor.chain().focus().toggleHighlight().run()'>
-        <PenIcon />
-      </button>
-      <button @click='editor.chain().focus().toggleBold().run()'>
-        <BoldIcon />
-      </button>
-      <button @click='editor.chain().focus().toggleItalic().run()'>
-        <ItalicIcon />
-      </button>
-      <button @click='editor.chain().focus().toggleStrike().run()'>
-        <StrikeThroughIcon />
-      </button>
-    </bubble-menu>
-    <div class='text-black dark:text-white'>
-      <editor-content class='pb-10' :editor='editor' v-model='getContent' />
+    <div v-if='!editor' class='text-center py-20 text-gray-500'>
+      <p>Loading editor...</p>
     </div>
+    <template v-else>
+      <bubble-menu class='bubble-menu' :editor='editor'>
+        <button @click='editor.chain().focus().toggleHighlight().run()'>
+          <PenIcon />
+        </button>
+        <button @click='editor.chain().focus().toggleBold().run()'>
+          <BoldIcon />
+        </button>
+        <button @click='editor.chain().focus().toggleItalic().run()'>
+          <ItalicIcon />
+        </button>
+        <button @click='editor.chain().focus().toggleStrike().run()'>
+          <StrikeThroughIcon />
+        </button>
+      </bubble-menu>
+      <div class='text-black dark:text-white'>
+        <editor-content class='pb-10' :editor='editor' />
+      </div>
+    </template>
   </div>
 </template>
 
@@ -30,6 +34,9 @@ import {
   Getters as FileGetters,
   Actions as FileActions
 } from '@/store/modules/file/types'
+import {
+  Actions as CalendarActions
+} from '@/store/modules/calendar/types'
 
 import PenIcon from '@/assets/icons/editor/pen.svg'
 import BoldIcon from '@/assets/icons/editor/bold.svg'
@@ -54,8 +61,8 @@ import HorizontalRule from '@tiptap/extension-horizontal-rule'
 import Strike from '@tiptap/extension-strike'
 import Link from '@tiptap/extension-link'
 import History from '@tiptap/extension-history'
-import Commands from '@/components/slash-commands/commands'
-import suggestion from '@/components/slash-commands/suggestions'
+import Commands from '@/components/slash-commands/commands.js'
+import suggestion from '@/components/slash-commands/suggestions.js'
 import { Placeholder } from '@tiptap/extension-placeholder'
 import { Gapcursor } from '@tiptap/extension-gapcursor'
 import { CharacterCount } from '@tiptap/extension-character-count'
@@ -76,6 +83,7 @@ export default {
   },
   methods: {
     ...mapActions('file', [FileActions.SET_CONTENT, FileActions.SAVE_FILE]),
+    ...mapActions('calendar', [CalendarActions.CHECK_DAYS_WITH_CONTENT]),
     _focusEditor() {
       this.editor
         .chain()
@@ -124,7 +132,10 @@ export default {
       autofocus: true,
       onUpdate: ({ editor }) => {
         this.setContent(editor.getHTML())
-        this.saveFile()
+        this.saveFile().then(() => {
+          // Refresh day indicators after saving
+          this.checkDaysWithContent()
+        })
       }
     })
   },

@@ -4,15 +4,24 @@ import {Translations} from '@/translation'
 
 
 import App from './App.vue'
-import router from './router'
+import router from './router/index.js'
 import '@/assets/css/tailwind.css'
-import i18n from './i18n'
+import i18n from './i18n.js'
 
-const Storage = require('electron-store')
-window.mainStorage = new Storage({
-  watch: true,
-  defaults: {}
-})
+// Use global require (available in Electron renderer with nodeIntegration: true)
+if (typeof require !== 'undefined') {
+  const Storage = require('electron-store')
+  window.mainStorage = new Storage({
+    watch: true,
+    defaults: {}
+  })
+} else if (window.require) {
+  const Storage = window.require('electron-store')
+  window.mainStorage = new Storage({
+    watch: true,
+    defaults: {}
+  })
+}
 
 Vue.config.productionTip = false
 Vue.use(Translations)

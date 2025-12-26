@@ -25,7 +25,7 @@ jobs:
       - name: Install Node.js, NPM and Yarn
         uses: actions/setup-node@v1
         with:
-          node-version: 16
+          node-version: 18
       
       - name: Install pacman dependencies
         if: startsWith(matrix.os, 'ubuntu')
@@ -41,8 +41,8 @@ jobs:
           mac_certs: ${{ secrets.CSC_LINK }}
           mac_certs_password: ${{ secrets.CSC_KEY_PASSWORD }}
 
-          skip_build: true
-          use_vue_cli: true
+          skip_build: false
+          build_script_name: build
 
           # GitHub token, automatically provided to the action
           # (No need to define this secret in the repo settings)

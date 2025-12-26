@@ -1,7 +1,7 @@
 import tippy from 'tippy.js'
 import { VueRenderer } from '@tiptap/vue-2'
 import CommandsList from './CommandsList.vue'
-import { translate } from '../../translation'
+import { translate } from '../../translation.js'
 
 export default {
   items: async ({ query }) => {

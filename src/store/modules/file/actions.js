@@ -13,7 +13,7 @@ export default {
     context.commit(Mutations.SET_CONTENT, content)
   },
   [Actions.SAVE_FILE](context) {
-    saveFile(
+    return saveFile(
       context.rootGetters[`calendar/${CalendarGetters.GET_CURRENT_DATE}`],
       context.getters[Getters.GET_FILE]
     )
