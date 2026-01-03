@@ -10,6 +10,9 @@ module.exports = {
     'dist_electron/**/*',
     'package.json'
   ],
+  asarUnpack: [
+    'dist/**/*'
+  ],
   extraMetadata: {
     main: 'dist_electron/background.js'
   },

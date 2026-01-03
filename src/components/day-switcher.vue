@@ -9,6 +9,7 @@
       border-b border-gray-400
       dark:border-gray-800
       py-4
+      px-10
     "
   >
     <template v-for="date in getCurrentWeek">
@@ -24,42 +25,33 @@
         >
           {{ date.weekDay }}
         </span>
-        <div class="flex flex-col items-center">
-          <!-- Dot indicator above day -->
-          <span
-            v-if="hasContent(date.isoDate)"
-            class="w-1.5 h-1.5 rounded-full bg-bright-pink dark:bg-red-500 mb-1"
-          ></span>
-          <span
-            v-else
-            class="w-1.5 h-1.5 mb-1"
-          ></span>
-          <span
-            class="
-              flex
-              justify-center
-              items-center
-              self-center
-              text-center
-              w-10
-              h-10
-              rounded-full
-              font-black
-              text-xs
-              hover:bg-gray-200
-              dark:hover:bg-gray-800
-              cursor-pointer
-              ring-bright-pink
-            "
-            :class="{
-              'ring-4 text-sm': date.isoDate === getCurrentDate
-            }"
-            :key="date.day"
-            @click="setDate(date.isoDate)"
-          >
-            {{ date.day }}
-          </span>
-        </div>
+        <span
+          class="
+            flex
+            justify-center
+            items-center
+            self-center
+            text-center
+            w-10
+            h-10
+            rounded-full
+            font-black
+            text-xs
+            hover:bg-gray-200
+            dark:hover:bg-gray-800
+            cursor-pointer
+            ring-bright-pink
+          "
+          :class="{
+            'ring-4 text-sm': date.isoDate === getCurrentDate,
+            'text-bright-pink dark:text-red-500': hasContent(date.isoDate),
+            'text-black dark:text-white': !hasContent(date.isoDate)
+          }"
+          :key="date.day"
+          @click="setDate(date.isoDate)"
+        >
+          {{ date.day }}
+        </span>
       </div>
     </template>
   </div>

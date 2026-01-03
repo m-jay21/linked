@@ -1,9 +1,9 @@
-<template>
+\<template>
   <div class="flex space-x-5 mb-4 mt-4">
     <button
       @click="setTheme('light')"
       class="
-        w-1/2
+        flex-1
         h-16
         bg-gray-100
         rounded-lg
@@ -23,7 +23,7 @@
     <button
       @click="setTheme('dark')"
       class="
-        w-1/2
+        flex-1
         h-16
         bg-gray-800
         rounded-lg
@@ -38,6 +38,29 @@
       :class="{'ring-2 ring-bright-pink' : this.getTheme() === 'dark'}"
     >
       <MoonIcon />
+    </button>
+    <button
+      @click="setTheme('caelestia')"
+      class="
+        flex-1
+        h-16
+        rounded-lg
+        flex
+        justify-center
+        items-center
+        align-center
+        cursor-pointer
+      "
+      :class="{
+        'ring-2 ring-bright-pink': this.getTheme() === 'caelestia',
+        'bg-gray-800 hover:bg-gray-700 text-white': this.getTheme() !== 'caelestia'
+      }"
+      :style="getTheme() === 'caelestia' ? {
+        backgroundColor: 'var(--theme-bg, #0f1513)',
+        color: 'var(--theme-accent, #86d6bf)'
+      } : {}"
+    >
+      <span class="text-xs font-bold">Caelestia</span>
     </button>
   </div>
 </template>

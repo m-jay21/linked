@@ -1,6 +1,6 @@
 <template>
   <div
-    class='px-10 mt-5 text-gray-400 dark:text-gray-500 relative flex-grow'
+    class='px-10 mt-5 text-gray-400 dark:text-gray-500 relative flex-grow max-w-4xl w-full'
     @click='_focusEditor'
   >
     <div v-if='!editor' class='text-center py-20 text-gray-500'>

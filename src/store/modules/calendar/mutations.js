@@ -9,5 +9,8 @@ export default {
   },
   [Mutations.SET_DAYS_WITH_CONTENT](state, days) {
     state.daysWithContent = days
+  },
+  [Mutations.SET_SHOW_CALENDAR](state, show) {
+    state.showCalendar = show
   }
 }

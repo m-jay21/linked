@@ -1,6 +1,6 @@
 <template>
   <Layout>
-    <main class='px-10 mt-10 text-black dark:text-white'>
+    <main class='px-10 mt-10 text-black dark:text-white max-w-4xl mx-auto w-full'>
       <div class='sticky top-0 bg-white dark:bg-black -mt-4 -m-0.5'>
         <div class='flex justify-between w-full pt-4'>
           <router-link

@@ -55,4 +55,29 @@ const getCurrentWeekDates = (date) => {
   return week
 }
 
-export { getToday, setDate, shiftDate, formatDate, getCurrentWeekDates }
+/**
+ * Returns an array of date objects for the entire month calendar view
+ */
+const getMonthDates = (date) => {
+  const dt = DateTime.fromISO(date)
+  const startOfMonth = dt.startOf('month')
+  const endOfMonth = dt.endOf('month')
+  const startOfCalendar = startOfMonth.startOf('week')
+  const endOfCalendar = endOfMonth.endOf('week')
+  
+  let days = []
+  let current = startOfCalendar
+  
+  while (current <= endOfCalendar) {
+    days.push({
+      isoDate: current.toISODate(),
+      day: current.toFormat('d'),
+      weekDay: current.toFormat('EEE'),
+      isCurrentMonth: current.month === dt.month
+    })
+    current = current.plus({ days: 1 })
+  }
+  return days
+}
+
+export { getToday, setDate, shiftDate, formatDate, getCurrentWeekDates, getMonthDates }

@@ -13,7 +13,9 @@ import {
   dialog
 } from 'electron'
 
-const isDevelopment = process.env.NODE_ENV !== 'production'
+// Use app.isPackaged to detect production builds (AppImage, etc.)
+// app.isPackaged is true when the app is packaged, false in development
+const isDevelopment = !app.isPackaged
 const isWindows = process.platform === 'win32'
 const isMacOS = process.platform === 'darwin'
 
@@ -28,6 +30,8 @@ protocol.registerSchemesAsPrivileged([
 ])
 
 const path = require('path')
+const fs = require('fs')
+const os = require('os')
 export const DAILY = 1000 * 60 * 60 * 24
 export const WEEKLY = DAILY * 7
 const basePath = path.join(app.getPath('documents'), 'linked')
@@ -182,10 +186,18 @@ const createWindow = () => {
     win.loadURL('http://localhost:5173')
     if (!process.env.IS_TEST) win.webContents.openDevTools()
   } else {
-    // Production: load from dist folder (relative to background.js location)
-    const path = require('path')
-    const indexPath = path.join(__dirname, '../dist/index.html')
-    win.loadFile(indexPath)
+    // Production: load from dist folder
+    // Try unpacked location first (app.asar.unpacked), then inside asar
+    let indexPath = process.resourcesPath
+      ? path.join(process.resourcesPath, 'app.asar.unpacked', 'dist', 'index.html')
+      : path.join(app.getAppPath(), '..', 'app.asar.unpacked', 'dist', 'index.html')
+    
+    // Fallback to inside asar if unpacked doesn't exist
+    const asarPath = path.join(app.getAppPath(), 'dist', 'index.html')
+    
+    win.loadFile(indexPath).catch(() => {
+      win.loadFile(asarPath)
+    })
     nativeTheme.themeSource = global.storage.get('theme')
   }
   
@@ -213,6 +225,7 @@ app.whenReady().then(async () => {
   }
   createWindow()
   updater.setupUpdates()
+  setupThemeWatcher()
 })
 
 if (isDevelopment) {
@@ -328,13 +341,72 @@ ipcMain.handle('SET_DATA_PATH', async () => {
 ipcMain.handle('TOGGLE_THEME', (event, mode) => {
   if (mode === 'light') {
     nativeTheme.themeSource = 'light'
+  } else if (mode === 'caelestia') {
+    nativeTheme.themeSource = 'dark'
   } else {
     nativeTheme.themeSource = 'dark'
   }
   return nativeTheme.shouldUseDarkColors
 })
 
-const fs = require('fs')
+// Btop theme parsing
+const btopThemePath = path.join(os.homedir(), '.config/btop/themes/caelestia.theme')
+let themeWatcher = null
+
+const parseBtopTheme = (filePath) => {
+  if (!fs.existsSync(filePath)) return null
+  
+  const colors = {}
+  const content = fs.readFileSync(filePath, 'utf-8')
+  const regex = /theme\[(\w+)\]\s*=\s*#?([0-9a-fA-F]{6})/gi
+  let match
+  
+  while ((match = regex.exec(content)) !== null) {
+    colors[match[1]] = `#${match[2].toUpperCase()}`
+  }
+  
+  return colors
+}
+
+const mapBtopColors = (btopColors) => {
+  return {
+    bg: btopColors.main_bg || '#0f1513',
+    fg: btopColors.main_fg || '#dee4e0',
+    accent: btopColors.hi_fg || '#86d6bf',
+    selectedBg: btopColors.selected_bg || '#1b211f',
+    selectedFg: btopColors.selected_fg || '#86d6bf',
+    inactive: btopColors.inactive_fg || '#89938f',
+    border: btopColors.div_line || '#3f4945',
+    primary: btopColors.cpu_start || '#a2eed9',
+    secondary: btopColors.free_start || '#5bd0df',
+    highlight: btopColors.used_start || '#96f2ce'
+  }
+}
+
+ipcMain.handle('GET_DYNAMIC_THEME', async () => {
+  const colors = parseBtopTheme(btopThemePath)
+  if (!colors) return null
+  return mapBtopColors(colors)
+})
+
+const setupThemeWatcher = () => {
+  if (!fs.existsSync(btopThemePath)) return
+  
+  const sendThemeUpdate = () => {
+    const colors = parseBtopTheme(btopThemePath)
+    if (colors && win) {
+      win.webContents.send('theme-update', mapBtopColors(colors))
+    }
+  }
+  
+  sendThemeUpdate()
+  
+  themeWatcher = fs.watch(btopThemePath, (eventType) => {
+    if (eventType === 'change') {
+      setTimeout(sendThemeUpdate, 100)
+    }
+  })
+}
 
 ipcMain.handle('FETCH_FILE', async (event, args) => {
   const [year, fileName] = args

@@ -4,6 +4,7 @@ import { resolve } from 'path'
 import electron from 'vite-plugin-electron'
 import renderer from 'vite-plugin-electron-renderer'
 import { readFileSync } from 'fs'
+import { spawn } from 'child_process'
 
 // Custom Vue 2 compatible SVG loader
 const svgLoader = () => {
@@ -47,7 +48,13 @@ export default defineConfig({
       {
         entry: 'src/background.js',
         onstart(options) {
-          // Electron will start automatically
+          // Start Electron after build completes
+          setTimeout(() => {
+            const electronPath = require('electron')
+            spawn(electronPath, [resolve(__dirname, 'dist_electron/background.js')], {
+              stdio: 'inherit'
+            })
+          }, 1000)
         },
         vite: {
           resolve: {

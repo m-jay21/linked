@@ -9,5 +9,8 @@ export default {
   },
   [Getters.GET_DAYS_WITH_CONTENT](state) {
     return state.daysWithContent
+  },
+  [Getters.GET_SHOW_CALENDAR](state) {
+    return state.showCalendar
   }
 }

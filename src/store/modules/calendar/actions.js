@@ -43,5 +43,8 @@ export default {
     const dates = week.map(day => day.isoDate)
     const daysWithContent = await ipcRenderer.invoke('CHECK_DAYS_WITH_CONTENT', dates)
     context.commit(Mutations.SET_DAYS_WITH_CONTENT, daysWithContent)
+  },
+  [Actions.TOGGLE_CALENDAR](context) {
+    context.commit(Mutations.SET_SHOW_CALENDAR, !context.state.showCalendar)
   }
 }

@@ -1,23 +1,35 @@
 <template>
   <Layout>
-    <main class="px-10 mt-10 text-black dark:text-white">
-      <router-link
-        to="/"
-        class="
-          flex
-          items-center
-          align-center
-          mb-3
-          hover:text-bright-pink
-          focus:outline-none
-          focus:ring-2 focus:ring-bright-pink
-          focus:border-bright-pink
-        "
-      >
-        <span class="mr-1"><BackIcon /></span>
-        {{ $t('settings.back') }}
-      </router-link>
-      <h1 class="mb-4">{{ $t('settings.title') }}</h1>
+    <main class="px-10 mt-10 text-black dark:text-white max-w-4xl mx-auto w-full">
+      <div class="flex items-center justify-between mb-8 relative">
+        <router-link
+          to="/"
+          class="
+            flex
+            items-center
+            justify-center
+            w-10
+            h-10
+            rounded-lg
+            hover:bg-gray-100
+            dark:hover:bg-gray-800
+            text-gray-600
+            dark:text-gray-400
+            hover:text-bright-pink
+            dark:hover:text-bright-pink
+            focus:outline-none
+            focus:ring-2
+            focus:ring-bright-pink
+            transition-colors
+            cursor-pointer
+          "
+          :title="$t('settings.back')"
+        >
+          <BackIcon />
+        </router-link>
+        <h1 class="text-2xl font-bold absolute left-1/2 transform -translate-x-1/2">{{ $t('settings.title') }}</h1>
+        <div class="w-10"></div>
+      </div>
       <h3 class="mt-8">{{ $t('settings.languages.title') }}</h3>
       <p class="text-sm leading-5 text-gray-500">{{ $t('settings.languages.hint') }}</p>
       <language-dropdown />

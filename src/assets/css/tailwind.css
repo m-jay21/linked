@@ -2,6 +2,64 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --theme-bg: #0f1513;
+  --theme-fg: #dee4e0;
+  --theme-accent: #86d6bf;
+  --theme-selected-bg: #1b211f;
+  --theme-selected-fg: #86d6bf;
+  --theme-inactive: #89938f;
+  --theme-border: #3f4945;
+  --theme-primary: #a2eed9;
+  --theme-secondary: #5bd0df;
+  --theme-highlight: #96f2ce;
+}
+
+.dark[data-theme="caelestia"],
+.dark[data-theme="caelestia"] body {
+  background-color: var(--theme-bg) !important;
+  color: var(--theme-fg) !important;
+}
+
+/* Override Tailwind dark mode classes */
+.dark[data-theme="caelestia"] div[class*="bg-black"],
+.dark[data-theme="caelestia"] div[class*="dark:bg-black"] {
+  background-color: var(--theme-bg) !important;
+}
+
+.dark[data-theme="caelestia"] *[class*="dark:text-white"] {
+  color: var(--theme-fg) !important;
+}
+
+.dark[data-theme="caelestia"] *[class*="dark:bg-secondary-black"] {
+  background-color: var(--theme-selected-bg) !important;
+}
+
+.dark[data-theme="caelestia"] *[class*="dark:text-gray-300"],
+.dark[data-theme="caelestia"] *[class*="dark:text-gray-400"],
+.dark[data-theme="caelestia"] *[class*="dark:text-gray-500"],
+.dark[data-theme="caelestia"] *[class*="dark:text-gray-600"] {
+  color: var(--theme-inactive) !important;
+}
+
+.dark[data-theme="caelestia"] *[class*="dark:border-gray-800"] {
+  border-color: var(--theme-border) !important;
+}
+
+.dark[data-theme="caelestia"] *[class*="dark:hover:bg-gray-800"]:hover {
+  background-color: var(--theme-selected-bg) !important;
+}
+
+.dark[data-theme="caelestia"] *[class*="dark:text-red-500"],
+.dark[data-theme="caelestia"] *[class*="text-bright-pink"] {
+  color: var(--theme-accent) !important;
+}
+
+.dark[data-theme="caelestia"] *[class*="ring-bright-pink"] {
+  --tw-ring-color: var(--theme-accent) !important;
+  border-color: var(--theme-accent) !important;
+}
+
 h1 {
   @apply text-4xl font-bold mb-2;
 }
@@ -184,6 +242,11 @@ ul[data-type='taskList'] li > input {
   z-index: 10;
 }
 
+.dark[data-theme="caelestia"] .bubble-menu {
+  background-color: var(--theme-selected-bg);
+  border-color: var(--theme-border);
+}
+
 .bubble-menu button {
   @apply text-gray-600 dark:text-gray-500 px-2 py-1 rounded-lg;
   border: none;
@@ -192,18 +255,37 @@ ul[data-type='taskList'] li > input {
   font-weight: 500;
 }
 
+.dark[data-theme="caelestia"] .bubble-menu button {
+  color: var(--theme-inactive);
+}
+
 .bubble-menu button:focus,
 .bubble-menu button:hover,
 .bubble-menu button.is-active {
   @apply text-white bg-gray-400 dark:bg-gray-700 focus:bg-gray-700 outline-none;
 }
 
+.dark[data-theme="caelestia"] .bubble-menu button:focus,
+.dark[data-theme="caelestia"] .bubble-menu button:hover,
+.dark[data-theme="caelestia"] .bubble-menu button.is-active {
+  color: var(--theme-fg);
+  background-color: var(--theme-border);
+}
+
 .ProseMirror a {
   @apply cursor-pointer text-bright-pink underline;
 }
 
+.dark[data-theme="caelestia"] .ProseMirror a {
+  color: var(--theme-accent);
+}
+
 .ProseMirror a:hover {
   @apply text-pink;
+}
+
+.dark[data-theme="caelestia"] .ProseMirror a:hover {
+  color: var(--theme-primary);
 }
 
 
@@ -215,6 +297,10 @@ ul[data-type='taskList'] li > input {
   pointer-events: none;
   height: 0;
 }
+
+.dark[data-theme="caelestia"] .ProseMirror .is-empty:first-child::before {
+  color: var(--theme-inactive);
+}
 /* Reset placeholder text for codeblocks */
 .ProseMirror pre[data-placeholder="Type / for blocks"]::before {
   content: '' !important;
@@ -222,4 +308,79 @@ ul[data-type='taskList'] li > input {
 
 hr {
   @apply border-t border-gray-400 dark:border-gray-500 my-3;
+}
+
+.dark[data-theme="caelestia"] hr {
+  border-color: var(--theme-border);
+}
+
+/* Calendar modal theme */
+.dark[data-theme="caelestia"] .calendar-modal {
+  background-color: var(--theme-bg) !important;
+  border-color: var(--theme-border) !important;
+}
+
+.dark[data-theme="caelestia"] .calendar-modal *[class*="text-black"],
+.dark[data-theme="caelestia"] .calendar-modal *[class*="dark:text-white"] {
+  color: var(--theme-fg) !important;
+}
+
+.dark[data-theme="caelestia"] .calendar-modal *[class*="dark:text-gray-400"],
+.dark[data-theme="caelestia"] .calendar-modal *[class*="dark:text-gray-500"],
+.dark[data-theme="caelestia"] .calendar-modal *[class*="dark:text-gray-600"] {
+  color: var(--theme-inactive) !important;
+}
+
+.dark[data-theme="caelestia"] .calendar-modal *[class*="dark:bg-gray-700"],
+.dark[data-theme="caelestia"] .calendar-modal *[class*="dark:bg-gray-800"],
+.dark[data-theme="caelestia"] .calendar-modal *[class*="dark:bg-gray-900"] {
+  background-color: var(--theme-selected-bg) !important;
+}
+
+.dark[data-theme="caelestia"] .calendar-modal *[class*="dark:hover:bg-gray-800"]:hover {
+  background-color: var(--theme-border) !important;
+}
+
+.dark[data-theme="caelestia"] .calendar-modal *[class*="dark:text-red-400"] {
+  color: var(--theme-accent) !important;
+}
+
+/* Main layout overrides */
+.dark[data-theme="caelestia"] .dark\:bg-black {
+  background-color: var(--theme-bg) !important;
+}
+
+.dark[data-theme="caelestia"] .dark\:text-white {
+  color: var(--theme-fg) !important;
+}
+
+.dark[data-theme="caelestia"] .dark\:bg-secondary-black {
+  background-color: var(--theme-selected-bg) !important;
+}
+
+.dark[data-theme="caelestia"] .dark\:text-gray-300,
+.dark[data-theme="caelestia"] .dark\:text-gray-400,
+.dark[data-theme="caelestia"] .dark\:text-gray-500,
+.dark[data-theme="caelestia"] .dark\:text-gray-600 {
+  color: var(--theme-inactive) !important;
+}
+
+.dark[data-theme="caelestia"] .dark\:border-gray-800 {
+  border-color: var(--theme-border) !important;
+}
+
+.dark[data-theme="caelestia"] .dark\:ring-gray-700 {
+  --tw-ring-color: var(--theme-border) !important;
+}
+
+.dark[data-theme="caelestia"] .dark\:hover\:bg-gray-800:hover {
+  background-color: var(--theme-selected-bg) !important;
+}
+
+.dark[data-theme="caelestia"] .dark\:text-red-500 {
+  color: var(--theme-accent) !important;
+}
+
+.dark[data-theme="caelestia"] .text-bright-pink {
+  color: var(--theme-accent) !important;
 }
