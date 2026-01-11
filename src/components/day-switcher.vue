@@ -43,7 +43,7 @@
               dark:hover:bg-gray-800
             "
             :class="{
-              'ring-4 text-sm': date.isoDate === getCurrentDate,
+              'ring-4 text-sm mt-1': date.isoDate === getCurrentDate,
               'text-bright-pink dark:text-red-500': hasContent(date.isoDate)
             }"
             :key="date.day"

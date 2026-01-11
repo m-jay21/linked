@@ -13,7 +13,7 @@
         justify-center
         items-center
         align-center
-        space-x-1
+        gap-1
       "
     >
       <span
@@ -22,12 +22,23 @@
       >
         <ArrowLeftIcon />
       </span>
-      <span>
-        <span class="mr-1 text-gray-400 dark:text-gray-600">
-          {{ $t('home.calendarWeek') }}
-        </span>
-        {{ formatDate(getCurrentDate, 'WW') }}</span
+      <button
+        class="
+          px-2
+          py-1
+          rounded
+          text-bright-pink
+          dark:text-red-500
+          hover:bg-gray-200
+          dark:hover:bg-gray-800
+          cursor-pointer
+          font-black
+          text-sm
+        "
+        @click="openCalendar"
       >
+        Calendar
+      </button>
       <span
         class="text-bright-pink hover:text-red-400 cursor-pointer"
         @click="setDayTo(7)"
@@ -35,12 +46,17 @@
         <ArrowRightIcon />
       </span>
     </span>
+    <month-calendar-modal
+      :is-open="isCalendarOpen"
+      @close="closeCalendar"
+    />
   </div>
 </template>
 
 <script>
 import ArrowLeftIcon from '@/assets/icons/arrow-left.svg'
 import ArrowRightIcon from '@/assets/icons/arrow-right.svg'
+import MonthCalendarModal from '@/components/month-calendar-modal'
 
 import { formatDate } from '@/store/modules/calendar/helper'
 import { mapActions, mapGetters } from 'vuex'
@@ -52,11 +68,23 @@ import {
 export default {
   components: {
     ArrowLeftIcon,
-    ArrowRightIcon
+    ArrowRightIcon,
+    MonthCalendarModal
+  },
+  data() {
+    return {
+      isCalendarOpen: false
+    }
   },
   methods: {
     formatDate,
-    ...mapActions('calendar', [CalendarActions.SET_DAY_TO])
+    ...mapActions('calendar', [CalendarActions.SET_DAY_TO]),
+    openCalendar() {
+      this.isCalendarOpen = true
+    },
+    closeCalendar() {
+      this.isCalendarOpen = false
+    }
   },
   computed: {
     ...mapGetters('calendar', [CalendarGetters.GET_CURRENT_DATE])
