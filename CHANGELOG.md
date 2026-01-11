@@ -1,3 +1,13 @@
+## [2.0.0](https://github.com/lostdesign/linked/compare/v1.5.2...v2.0.0) - 2024
+
+- ✨ Dynamic file creation - files only created when they contain content
+- ✨ Day highlighting - days with entries are highlighted in calendar views
+- ✨ Month calendar modal - full month view with navigation
+- ✨ Settings button - added settings icon button, removed native menu bar
+- ✨ Dynamic Caelestia theme - theme dynamically sourced from btop theme file with real-time updates
+- ♻️ All colors now dynamically set - no hardcoded color values
+- 🐛 Cleanup empty files on startup
+
 ## [1.4.8](https://github.com/lostdesign/linked/compare/v1.4.7...v1.4.8) - 2022-02-05
 
 - 🐛 fix app-header
