@@ -18,7 +18,9 @@
         <StrikeThroughIcon />
       </button>
     </bubble-menu>
-    <div class='text-black dark:text-white'>
+    <div 
+      :style="{ color: themeText }"
+    >
       <editor-content class='pb-10' :editor='editor' v-model='getContent' />
     </div>
   </div>
@@ -33,6 +35,9 @@ import {
 import {
   Actions as CalendarActions
 } from '@/store/modules/calendar/types'
+import {
+  Getters as AppGetters
+} from '@/store/modules/app/types'
 
 import PenIcon from '@/assets/icons/editor/pen.svg'
 import BoldIcon from '@/assets/icons/editor/bold.svg'
@@ -88,7 +93,16 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('file', [FileGetters.GET_CONTENT])
+    ...mapGetters('file', [FileGetters.GET_CONTENT]),
+    ...mapGetters('app', [AppGetters.GET_THEME, AppGetters.GET_THEME_COLORS]),
+    themeText() {
+      const theme = this.getTheme
+      if (theme === 'caelestia') {
+        const colors = this.getThemeColors
+        return colors?.text || '#e0e4da'
+      }
+      return theme === 'dark' ? '#ffffff' : '#000000'
+    }
   },
   mounted() {
     this.editor = new Editor({

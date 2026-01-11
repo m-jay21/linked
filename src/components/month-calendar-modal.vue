@@ -2,10 +2,17 @@
   <div
     v-if="isOpen"
     class="fixed inset-0 z-50 flex items-center justify-center"
+    :style="{
+      backgroundColor: backdropColor
+    }"
     @click.self="closeModal"
   >
     <div
-      class="bg-gray-50 dark:bg-gray-900 rounded-lg shadow-xl w-96 max-w-[90vw] p-6 border-2 border-accent dark:border-accent-dark"
+      class="rounded-lg shadow-xl w-96 max-w-[90vw] p-6 border-2 border-accent dark:border-accent-dark"
+      :style="{
+        backgroundColor: modalBg,
+        color: themeText
+      }"
       @click.stop
     >
       <!-- Header with month/year and navigation -->
@@ -17,7 +24,7 @@
         >
           <ArrowLeftIcon />
         </button>
-        <span class="text-xl font-black">{{ monthYear }}</span>
+        <span class="text-xl font-black" :style="{ color: themeText }">{{ monthYear }}</span>
         <button
           class="cursor-pointer"
           :style="{ color: accentColor }"
@@ -60,12 +67,9 @@
               dark:hover:bg-gray-800
             "
             :class="{
-              'text-gray-400 dark:text-gray-600': !date.isCurrentMonth,
-              'ring-2': date.isoDate === getCurrentDate,
-              'text-accent dark:text-accent-dark': date.isCurrentMonth && hasContent(date.isoDate),
-              'text-black dark:text-white': date.isCurrentMonth && !hasContent(date.isoDate) && date.isoDate !== getCurrentDate
+              'ring-2': date.isoDate === getCurrentDate
             }"
-            :style="date.isoDate === getCurrentDate ? { boxShadow: `0 0 0 2px ${accentColor}` } : {}"
+            :style="getDateStyle(date)"
             @click="selectDate(date.isoDate)"
           >
             {{ date.day }}
@@ -117,6 +121,37 @@ export default {
       if (!colors) return '#FF005C'
       // Use accent-dark for dark mode, accent for light mode
       return this.getTheme === 'dark' ? colors.accentDark : colors.accent
+    },
+    themeText() {
+      const theme = this.getTheme
+      if (theme === 'caelestia') {
+        const colors = this.getThemeColors
+        return colors?.text || '#e0e4da'
+      }
+      return theme === 'dark' ? '#ffffff' : '#000000'
+    },
+    modalBg() {
+      const theme = this.getTheme
+      if (theme === 'caelestia') {
+        const colors = this.getThemeColors
+        // Use selectedBg for modal (slightly lighter than main background)
+        return colors?.selectedBg || colors?.background || '#1d211b'
+      }
+      return theme === 'dark' ? '#111827' : '#f9fafb'
+    },
+    backdropColor() {
+      const theme = this.getTheme
+      if (theme === 'caelestia') {
+        const colors = this.getThemeColors
+        // Use the background color with some opacity for backdrop
+        const bg = colors?.background || '#11140f'
+        // Convert hex to rgba with opacity
+        const r = parseInt(bg.slice(1, 3), 16)
+        const g = parseInt(bg.slice(3, 5), 16)
+        const b = parseInt(bg.slice(5, 7), 16)
+        return `rgba(${r}, ${g}, ${b}, 0.5)`
+      }
+      return theme === 'dark' ? 'rgba(0, 0, 0, 0.5)' : 'rgba(0, 0, 0, 0.5)'
     },
     weekDays() {
       // Get week day abbreviations based on locale
@@ -181,6 +216,24 @@ export default {
         .map(d => d.isoDate)
       // Dispatch the action with the dates array
       await this[CalendarActions.CHECK_DAYS_WITH_CONTENT](dates)
+    },
+    getDateStyle(date) {
+      const style = {}
+      
+      if (date.isoDate === this.getCurrentDate) {
+        style.boxShadow = `0 0 0 2px ${this.accentColor}`
+      }
+      
+      // Set text color based on state
+      if (!date.isCurrentMonth) {
+        style.color = this.getTheme === 'caelestia' ? '#8c9387' : '#9ca3af'
+      } else if (date.isCurrentMonth && this.hasContent(date.isoDate)) {
+        style.color = this.accentColor
+      } else {
+        style.color = this.themeText
+      }
+      
+      return style
     },
   },
   mounted() {

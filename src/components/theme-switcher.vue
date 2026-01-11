@@ -3,7 +3,7 @@
     <button
       @click="setTheme('light')"
       class="
-        w-1/2
+        flex-1
         h-16
         bg-gray-100
         rounded-lg
@@ -23,7 +23,7 @@
     <button
       @click="setTheme('dark')"
       class="
-        w-1/2
+        flex-1
         h-16
         bg-gray-800
         rounded-lg
@@ -38,6 +38,28 @@
       :class="{'ring-2 ring-accent' : this.getTheme() === 'dark'}"
     >
       <MoonIcon />
+    </button>
+    <button
+      @click="setTheme('caelestia')"
+      class="
+        flex-1
+        h-16
+        bg-gray-900
+        rounded-lg
+        flex
+        justify-center
+        items-center
+        align-center
+        text-white
+        hover:bg-gray-800
+        cursor-pointer
+        text-xs
+        font-black
+      "
+      :class="{'ring-2 ring-accent' : this.getTheme() === 'caelestia'}"
+      title="Dynamic Caelestia"
+    >
+      Caelestia
     </button>
   </div>
 </template>

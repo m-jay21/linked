@@ -2,7 +2,6 @@
   <div
     class="
       flex
-      dark:bg-black
       justify-center
       space-x-4
       z-50
@@ -10,6 +9,9 @@
       dark:border-gray-800
       py-4
     "
+    :style="{
+      backgroundColor: themeBg
+    }"
   >
     <template v-for="date in getCurrentWeek">
       <div
@@ -92,6 +94,14 @@ export default {
       if (!colors) return '#FF005C'
       // Use accent-dark for dark mode, accent for light mode
       return this.getTheme === 'dark' ? colors.accentDark : colors.accent
+    },
+    themeBg() {
+      const theme = this.getTheme
+      if (theme === 'caelestia') {
+        const colors = this.getThemeColors
+        return colors?.background || '#11140f'
+      }
+      return theme === 'dark' ? '#000000' : 'transparent'
     }
   },
   mounted() {

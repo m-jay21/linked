@@ -27,7 +27,24 @@ export const getThemeColors = async () => {
         accent: '#FF005C',
         accentHover: '#D1014C',
         accentDark: '#EF4444'
+      },
+      caelestia: {
+        accent: '#a4d397',
+        accentHover: '#5bd0df',
+        accentDark: '#6dcfa6',
+        background: '#11140f',
+        text: '#e0e4da'
       }
+    }
+  }
+  // Ensure caelestia colors exist
+  if (!colors.caelestia) {
+    colors.caelestia = {
+      accent: '#a4d397',
+      accentHover: '#5bd0df',
+      accentDark: '#6dcfa6',
+      background: '#11140f',
+      text: '#e0e4da'
     }
   }
   return colors
@@ -82,4 +99,8 @@ export const setDataPath = () => {
 
 export const setAllowPrerelease = async (value) => {
   return ipcRenderer.invoke('SET_STORAGE_VALUE', 'allowPrerelease', value)
+}
+
+export const readCaelestiaTheme = async () => {
+  return ipcRenderer.invoke('READ_CAELESTIA_THEME')
 }

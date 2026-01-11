@@ -6,6 +6,13 @@
   --accent-color: #FF005C;
   --accent-hover: #D1014C;
   --accent-dark: #EF4444;
+  --theme-bg: #ffffff;
+  --theme-text: #000000;
+}
+
+.dark {
+  --theme-bg: #000000;
+  --theme-text: #ffffff;
 }
 
 h1 {

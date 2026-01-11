@@ -13,6 +13,7 @@ export default {
     if (!state.theme || !state.themeColors[state.theme]) {
       return state.themeColors.dark // default
     }
+    // For caelestia, return caelestia colors, otherwise return theme colors
     return state.themeColors[state.theme]
   },
 

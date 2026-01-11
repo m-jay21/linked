@@ -37,10 +37,26 @@ export default {
     ...mapActions('app', [AppActions.INIT_APP]),
     updateAccentColors() {
       const colors = this.getThemeColors
+      const theme = this.getTheme
       if (colors) {
         document.documentElement.style.setProperty('--accent-color', colors.accent)
         document.documentElement.style.setProperty('--accent-hover', colors.accentHover)
         document.documentElement.style.setProperty('--accent-dark', colors.accentDark)
+        
+        // Update background and text colors for Caelestia theme
+        if (theme === 'caelestia' && colors.background && colors.text) {
+          document.documentElement.style.setProperty('--theme-bg', colors.background)
+          document.documentElement.style.setProperty('--theme-text', colors.text)
+        } else {
+          // Reset to defaults for other themes
+          if (theme === 'dark') {
+            document.documentElement.style.setProperty('--theme-bg', '#000000')
+            document.documentElement.style.setProperty('--theme-text', '#ffffff')
+          } else {
+            document.documentElement.style.setProperty('--theme-bg', '#ffffff')
+            document.documentElement.style.setProperty('--theme-text', '#000000')
+          }
+        }
       }
     }
   },
@@ -89,7 +105,8 @@ export default {
       }
 
       if (mutation.type === `app/${AppActions.SET_THEME}`) {
-        if (this.getTheme === 'dark') {
+        const theme = this.getTheme
+        if (theme === 'dark' || theme === 'caelestia') {
           document.documentElement.classList.add('dark')
         } else {
           document.documentElement.classList.remove('dark')
@@ -103,13 +120,31 @@ export default {
       }
     })
 
-    if (this.getTheme === 'dark') {
+    const theme = this.getTheme
+    if (theme === 'dark' || theme === 'caelestia') {
       document.documentElement.classList.add('dark')
     } else {
       document.documentElement.classList.remove('dark')
     }
     // Initialize accent colors
     this.updateAccentColors()
+    
+    // Listen for Caelestia theme file changes
+    ipcRenderer.on('caelestia-theme-updated', async (event, colors) => {
+      if (this.getTheme === 'caelestia') {
+        await this.$store.dispatch(`app/${AppActions.SET_THEME_COLORS}`, {
+          theme: 'caelestia',
+          colors: {
+            accent: colors.accent,
+            accentHover: colors.accentHover,
+            accentDark: colors.accentDark,
+            background: colors.background,
+            text: colors.text,
+            selectedBg: colors.selectedBg
+          }
+        })
+      }
+    })
   }
 }
 </script>

@@ -13,7 +13,8 @@ import {
   getDataPath,
   setDataPath, 
   setAllowPrerelease, 
-  getAllowPrerelease
+  getAllowPrerelease,
+  readCaelestiaTheme
 } from '@/store/modules/app/helper'
 
 export default {
@@ -24,6 +25,24 @@ export default {
     const themeColors = await getThemeColors()
     context.commit(Mutations.SET_THEME_COLORS, { theme: 'light', colors: themeColors.light })
     context.commit(Mutations.SET_THEME_COLORS, { theme: 'dark', colors: themeColors.dark })
+    
+    // If theme is caelestia, load colors from file
+    if (theme === 'caelestia') {
+      const caelestiaColors = await readCaelestiaTheme()
+      if (caelestiaColors) {
+        context.commit(Mutations.SET_THEME_COLORS, { 
+          theme: 'caelestia', 
+          colors: {
+            accent: caelestiaColors.accent,
+            accentHover: caelestiaColors.accentHover,
+            accentDark: caelestiaColors.accentDark,
+            background: caelestiaColors.background,
+            text: caelestiaColors.text,
+            selectedBg: caelestiaColors.selectedBg
+          }
+        })
+      }
+    }
     
     const language = await getLanguage()
     context.commit(Mutations.SET_LANGUAGE, language)

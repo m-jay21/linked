@@ -32,6 +32,9 @@ export const DAILY = 1000 * 60 * 60 * 24
 export const WEEKLY = DAILY * 7
 const basePath = path.join(app.getPath('documents'), 'linked')
 
+// Caelestia theme path
+const CAELESTIA_THEME_PATH = '/home/mjay21/.config/btop/themes/caelestia.theme'
+
 const Store = require('electron-store')
 global.storage = new Store({
   watch: true,
@@ -212,6 +215,8 @@ app.whenReady().then(async () => {
   }
   // Clean up existing empty files on startup
   await cleanupEmptyFiles()
+  // Setup Caelestia theme watcher
+  setupThemeWatcher()
   createWindow()
   updater.setupUpdates()
 })
@@ -460,6 +465,58 @@ ipcMain.handle('SEARCH', async (event, search) => {
 ipcMain.handle('LOAD_SEARCH_INDEX', async () => {
   return retrieveIndex()
 })
+
+// Caelestia theme parser (using CommonJS require for Node.js)
+const { parseBtopTheme, mapBtopToAppColors } = require('./utils/btopThemeParser')
+
+// Read and parse btop theme
+ipcMain.handle('READ_CAELESTIA_THEME', async () => {
+  try {
+    if (!fs.existsSync(CAELESTIA_THEME_PATH)) {
+      console.warn('Caelestia theme file not found:', CAELESTIA_THEME_PATH)
+      return null
+    }
+    const content = await fs.promises.readFile(CAELESTIA_THEME_PATH, 'utf-8')
+    const btopColors = parseBtopTheme(content)
+    return mapBtopToAppColors(btopColors)
+  } catch (error) {
+    console.error('Error reading Caelestia theme:', error)
+    return null
+  }
+})
+
+// Watch theme file for changes
+let themeWatcher = null
+
+const setupThemeWatcher = () => {
+  if (!fs.existsSync(CAELESTIA_THEME_PATH)) {
+    console.warn('Caelestia theme file not found, skipping watcher')
+    return
+  }
+  
+  if (themeWatcher) {
+    fs.unwatchFile(CAELESTIA_THEME_PATH, themeWatcher)
+  }
+  
+  themeWatcher = fs.watchFile(CAELESTIA_THEME_PATH, { interval: 1000 }, async (curr, prev) => {
+    if (curr.mtime !== prev.mtime) {
+      // File changed, notify renderer
+      try {
+        if (!fs.existsSync(CAELESTIA_THEME_PATH)) return
+        const content = await fs.promises.readFile(CAELESTIA_THEME_PATH, 'utf-8')
+        const btopColors = parseBtopTheme(content)
+        const colors = mapBtopToAppColors(btopColors)
+        if (win && !win.isDestroyed() && colors) {
+          win.webContents.send('caelestia-theme-updated', colors)
+        }
+      } catch (error) {
+        console.error('Error handling theme update:', error)
+      }
+    }
+  })
+  
+  console.log('Caelestia theme watcher initialized')
+}
 
 /**
  * Checks if content is empty (no meaningful text)

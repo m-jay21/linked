@@ -1,13 +1,14 @@
 <template>
   <div class="flex justify-between items-center align-center pt-6 px-10 mb-2">
-    <span class="text-center text-2xl font-black">{{
+    <span 
+      class="text-center text-2xl font-black"
+      :style="{ color: themeText }"
+    >{{
       formatDate(getCurrentDate, 'MMMM yyyy')
     }}</span>
     <!-- Week switcher -->
     <span
       class="
-        text-black
-        dark:text-white
         select-none
         flex
         justify-center
@@ -15,6 +16,7 @@
         align-center
         gap-1
       "
+      :style="{ color: themeText }"
     >
       <span
         class="cursor-pointer"
@@ -118,6 +120,14 @@ export default {
       const colors = this.getThemeColors
       if (!colors) return '#FF005C'
       return this.getTheme === 'dark' ? colors.accentDark : colors.accent
+    },
+    themeText() {
+      const theme = this.getTheme
+      if (theme === 'caelestia') {
+        const colors = this.getThemeColors
+        return colors?.text || '#e0e4da'
+      }
+      return theme === 'dark' ? '#ffffff' : '#000000'
     }
   }
 }
