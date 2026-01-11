@@ -10,10 +10,10 @@
               items-center
               align-center
               mb-3
-              hover:text-bright-pink
+              hover:text-accent
               focus:outline-none
-              focus:ring-2 focus:ring-bright-pink
-              focus:border-bright-pink
+              focus:ring-2 focus:ring-accent
+              focus:border-accent
             "
           >
             <span class="mr-1"><BackIcon /></span>
@@ -27,7 +27,7 @@
           id='search'
           v-model='searchTerm'
           ref='input'
-          class="shadow-sm focus:ring-red-600 focus:border-red-600 block w-full sm:text-sm border-gray-800 rounded-md bg-gray-100 text-gray-900 dark:text-white dark:bg-secondary-black border-2 border-bright-pink outline-none p-2"
+          class="shadow-sm focus:ring-accent-dark focus:border-accent-dark block w-full sm:text-sm border-gray-800 rounded-md bg-gray-100 text-gray-900 dark:text-white dark:bg-secondary-black border-2 border-accent dark:border-accent-dark outline-none p-2"
           :placeholder="$t('settings.search.placeholder')"
           @keydown='_handleSearch'
         />
@@ -43,7 +43,7 @@
       <div v-else>
         <div 
           ref='results'
-          class='bg-gray-200 dark:bg-secondary-black max-h-64 overflow-hidden px-4 py-4 rounded-md mt-5 mb-5 ring-2 ring-transparent outline-none hover:ring-bright-pink focus:ring-bright-pink overflow-hidden' 
+          class='bg-gray-200 dark:bg-secondary-black max-h-64 overflow-hidden px-4 py-4 rounded-md mt-5 mb-5 ring-2 ring-transparent outline-none hover:ring-accent focus:ring-accent overflow-hidden' 
           v-for='dates in searchResults' 
           :key='dates.date'
           @click='_handleSearchResultClicked(dates.date)'

@@ -9,8 +9,11 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        'pink': '#D1014C',
-        'bright-pink': '#FF005C',
+        'pink': 'var(--accent-hover)',
+        'bright-pink': 'var(--accent-color)',
+        'accent': 'var(--accent-color)',
+        'accent-hover': 'var(--accent-hover)',
+        'accent-dark': 'var(--accent-dark)',
         'secondary-black': '#1f1f1f'
       }
     },

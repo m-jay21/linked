@@ -16,7 +16,7 @@
         dark:hover:bg-gray-300
         cursor-pointer
       "
-      :class="{'ring-2 ring-bright-pink' : this.getTheme() === 'light'}"
+      :class="{'ring-2 ring-accent' : this.getTheme() === 'light'}"
     >
       <SunIcon />
     </button>
@@ -35,7 +35,7 @@
         hover:bg-gray-700
         cursor-pointer
       "
-      :class="{'ring-2 ring-bright-pink' : this.getTheme() === 'dark'}"
+      :class="{'ring-2 ring-accent' : this.getTheme() === 'dark'}"
     >
       <MoonIcon />
     </button>

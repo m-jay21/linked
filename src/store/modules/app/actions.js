@@ -3,9 +3,11 @@ import { Actions as CalendarActions } from '@/store/modules/calendar/types'
 import {
   getLanguage,
   getTheme,
+  getThemeColors,
   getUpdateInterval,
   setLanguage,
   setTheme,
+  setThemeColors,
   loadSearchIndex,
   setUpdateInterval,
   getDataPath,
@@ -18,6 +20,10 @@ export default {
   async [Actions.INIT_APP](context) {
     const theme = await getTheme()
     context.commit(Mutations.SET_THEME, theme)
+    
+    const themeColors = await getThemeColors()
+    context.commit(Mutations.SET_THEME_COLORS, { theme: 'light', colors: themeColors.light })
+    context.commit(Mutations.SET_THEME_COLORS, { theme: 'dark', colors: themeColors.dark })
     
     const language = await getLanguage()
     context.commit(Mutations.SET_LANGUAGE, language)
@@ -51,6 +57,13 @@ export default {
     setTheme(theme).then(() => {
       context.commit(Mutations.SET_THEME, theme)
     })
+  },
+
+  async [Actions.SET_THEME_COLORS](context, { theme, colors }) {
+    const allColors = await getThemeColors()
+    allColors[theme] = { ...allColors[theme], ...colors }
+    await setThemeColors(allColors)
+    context.commit(Mutations.SET_THEME_COLORS, { theme, colors })
   },
 
   async [Actions.SET_UPDATE_INTERVAL](context, interval) {

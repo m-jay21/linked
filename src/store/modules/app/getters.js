@@ -9,6 +9,18 @@ export default {
     return state.theme
   },
 
+  [Getters.GET_THEME_COLORS](state) {
+    if (!state.theme || !state.themeColors[state.theme]) {
+      return state.themeColors.dark // default
+    }
+    return state.themeColors[state.theme]
+  },
+
+  [Getters.GET_ACCENT_COLOR](state, getters) {
+    const colors = getters[Getters.GET_THEME_COLORS]
+    return colors?.accent || '#FF005C'
+  },
+
   [Getters.GET_UPDATE_INTERVAL](state) {
     return state.updateInterval
   },

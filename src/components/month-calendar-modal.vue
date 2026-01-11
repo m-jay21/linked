@@ -1,24 +1,26 @@
 <template>
   <div
     v-if="isOpen"
-    class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 dark:bg-opacity-70"
+    class="fixed inset-0 z-50 flex items-center justify-center"
     @click.self="closeModal"
   >
     <div
-      class="bg-gray-50 dark:bg-gray-900 rounded-lg shadow-xl w-96 max-w-[90vw] p-6 border border-bright-pink dark:border-red-500"
+      class="bg-gray-50 dark:bg-gray-900 rounded-lg shadow-xl w-96 max-w-[90vw] p-6 border-2 border-accent dark:border-accent-dark"
       @click.stop
     >
       <!-- Header with month/year and navigation -->
       <div class="flex items-center justify-between mb-4">
         <button
-          class="text-bright-pink hover:text-red-400 cursor-pointer"
+          class="cursor-pointer"
+          :style="{ color: accentColor }"
           @click="previousMonth"
         >
           <ArrowLeftIcon />
         </button>
         <span class="text-xl font-black">{{ monthYear }}</span>
         <button
-          class="text-bright-pink hover:text-red-400 cursor-pointer"
+          class="cursor-pointer"
+          :style="{ color: accentColor }"
           @click="nextMonth"
         >
           <ArrowRightIcon />
@@ -59,10 +61,11 @@
             "
             :class="{
               'text-gray-400 dark:text-gray-600': !date.isCurrentMonth,
-              'ring-2 ring-bright-pink': date.isoDate === getCurrentDate,
-              'text-bright-pink dark:text-red-500': date.isCurrentMonth && hasContent(date.isoDate),
+              'ring-2': date.isoDate === getCurrentDate,
+              'text-accent dark:text-accent-dark': date.isCurrentMonth && hasContent(date.isoDate),
               'text-black dark:text-white': date.isCurrentMonth && !hasContent(date.isoDate) && date.isoDate !== getCurrentDate
             }"
+            :style="date.isoDate === getCurrentDate ? { boxShadow: `0 0 0 2px ${accentColor}` } : {}"
             @click="selectDate(date.isoDate)"
           >
             {{ date.day }}
@@ -82,6 +85,9 @@ import {
   Getters as CalendarGetters,
   Actions as CalendarActions
 } from '@/store/modules/calendar/types'
+import {
+  Getters as AppGetters
+} from '@/store/modules/app/types'
 import { getMonthDates, formatDate } from '@/store/modules/calendar/helper'
 
 export default {
@@ -105,6 +111,13 @@ export default {
       CalendarGetters.GET_CURRENT_DATE,
       CalendarGetters.GET_DAYS_WITH_CONTENT
     ]),
+    ...mapGetters('app', [AppGetters.GET_THEME_COLORS, AppGetters.GET_THEME]),
+    accentColor() {
+      const colors = this.getThemeColors
+      if (!colors) return '#FF005C'
+      // Use accent-dark for dark mode, accent for light mode
+      return this.getTheme === 'dark' ? colors.accentDark : colors.accent
+    },
     weekDays() {
       // Get week day abbreviations based on locale
       const startOfWeek = DateTime.now().startOf('week')
@@ -168,7 +181,7 @@ export default {
         .map(d => d.isoDate)
       // Dispatch the action with the dates array
       await this[CalendarActions.CHECK_DAYS_WITH_CONTENT](dates)
-    }
+    },
   },
   mounted() {
     if (this.isOpen) {

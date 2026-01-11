@@ -19,6 +19,14 @@ import {
 const { ipcRenderer } = require('electron')
 
 export default {
+  computed: {
+    ...mapGetters('calendar', [CalendarGetters.GET_CURRENT_DATE]),
+    ...mapGetters('app', [
+      AppGetters.GET_LANGUAGE,
+      AppGetters.GET_THEME,
+      AppGetters.GET_THEME_COLORS
+    ])
+  },
   methods: {
     ...mapActions('calendar', [
       CalendarActions.SET_DATE,
@@ -26,11 +34,15 @@ export default {
       CalendarActions.SET_CURRENT_WEEK
     ]),
     ...mapActions('file', [FileActions.FETCH_FILE]),
-    ...mapActions('app', [AppActions.INIT_APP])
-  },
-  computed: {
-    ...mapGetters('calendar', [CalendarGetters.GET_CURRENT_DATE]),
-    ...mapGetters('app', [AppGetters.GET_LANGUAGE, AppGetters.GET_THEME])
+    ...mapActions('app', [AppActions.INIT_APP]),
+    updateAccentColors() {
+      const colors = this.getThemeColors
+      if (colors) {
+        document.documentElement.style.setProperty('--accent-color', colors.accent)
+        document.documentElement.style.setProperty('--accent-hover', colors.accentHover)
+        document.documentElement.style.setProperty('--accent-dark', colors.accentDark)
+      }
+    }
   },
   mounted() {
     ipcRenderer.on('open-settings', () => {
@@ -82,6 +94,12 @@ export default {
         } else {
           document.documentElement.classList.remove('dark')
         }
+        // Update CSS variables for accent colors
+        this.updateAccentColors()
+      }
+      
+      if (mutation.type === `app/${AppActions.SET_THEME_COLORS}`) {
+        this.updateAccentColors()
       }
     })
 
@@ -90,6 +108,8 @@ export default {
     } else {
       document.documentElement.classList.remove('dark')
     }
+    // Initialize accent colors
+    this.updateAccentColors()
   }
 }
 </script>

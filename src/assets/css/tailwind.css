@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --accent-color: #FF005C;
+  --accent-hover: #D1014C;
+  --accent-dark: #EF4444;
+}
+
 h1 {
   @apply text-4xl font-bold mb-2;
 }
@@ -199,11 +205,11 @@ ul[data-type='taskList'] li > input {
 }
 
 .ProseMirror a {
-  @apply cursor-pointer text-bright-pink underline;
+  @apply cursor-pointer text-accent underline;
 }
 
 .ProseMirror a:hover {
-  @apply text-pink;
+  @apply text-accent-hover;
 }
 
 

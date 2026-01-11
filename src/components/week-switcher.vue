@@ -17,7 +17,8 @@
       "
     >
       <span
-        class="text-bright-pink hover:text-red-400 cursor-pointer"
+        class="cursor-pointer"
+        :style="{ color: arrowColor }"
         @click="setDayTo(-7)"
       >
         <ArrowLeftIcon />
@@ -27,8 +28,8 @@
           px-2
           py-1
           rounded
-          text-bright-pink
-          dark:text-red-500
+          text-accent
+          dark:text-accent-dark
           hover:bg-gray-200
           dark:hover:bg-gray-800
           cursor-pointer
@@ -40,7 +41,8 @@
         Calendar
       </button>
       <span
-        class="text-bright-pink hover:text-red-400 cursor-pointer"
+        class="cursor-pointer"
+        :style="{ color: arrowColor }"
         @click="setDayTo(7)"
       >
         <ArrowRightIcon />
@@ -49,8 +51,8 @@
         class="
           p-1
           rounded
-          text-bright-pink
-          dark:text-red-500
+          text-accent
+          dark:text-accent-dark
           hover:bg-gray-200
           dark:hover:bg-gray-800
           cursor-pointer
@@ -80,6 +82,9 @@ import {
   Actions as CalendarActions,
   Getters as CalendarGetters
 } from '@/store/modules/calendar/types'
+import {
+  Getters as AppGetters
+} from '@/store/modules/app/types'
 
 export default {
   components: {
@@ -107,7 +112,13 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('calendar', [CalendarGetters.GET_CURRENT_DATE])
+    ...mapGetters('calendar', [CalendarGetters.GET_CURRENT_DATE]),
+    ...mapGetters('app', [AppGetters.GET_THEME_COLORS, AppGetters.GET_THEME]),
+    arrowColor() {
+      const colors = this.getThemeColors
+      if (!colors) return '#FF005C'
+      return this.getTheme === 'dark' ? colors.accentDark : colors.accent
+    }
   }
 }
 </script>

@@ -6,5 +6,8 @@ export default {
   },
   [Mutations.SET_CURRENT_WEEK](state, week) {
     state.currentWeek = week
+  },
+  [Mutations.SET_DAYS_WITH_CONTENT](state, days) {
+    state.daysWithContent = days
   }
 }

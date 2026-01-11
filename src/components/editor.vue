@@ -30,6 +30,9 @@ import {
   Getters as FileGetters,
   Actions as FileActions
 } from '@/store/modules/file/types'
+import {
+  Actions as CalendarActions
+} from '@/store/modules/calendar/types'
 
 import PenIcon from '@/assets/icons/editor/pen.svg'
 import BoldIcon from '@/assets/icons/editor/bold.svg'
@@ -76,6 +79,7 @@ export default {
   },
   methods: {
     ...mapActions('file', [FileActions.SET_CONTENT, FileActions.SAVE_FILE]),
+    ...mapActions('calendar', [CalendarActions.CHECK_DAYS_WITH_CONTENT]),
     _focusEditor() {
       this.editor
         .chain()
@@ -124,7 +128,9 @@ export default {
       autofocus: true,
       onUpdate: ({ editor }) => {
         this.setContent(editor.getHTML())
-        this.saveFile()
+        this.saveFile().then(() => {
+          this[CalendarActions.CHECK_DAYS_WITH_CONTENT]()
+        })
       }
     })
   },

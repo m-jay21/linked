@@ -15,8 +15,8 @@
           text-left
           cursor-default
           focus:outline-none
-          focus:ring-2 focus:ring-bright-pink
-          focus:border-bright-pink
+          focus:ring-2 focus:ring-accent
+          focus:border-accent
           sm:text-sm
           cursor-pointer
         "
@@ -80,7 +80,7 @@
             <span class="font-normal block truncate">{{ lang.title }} </span>
             <span
               class="
-                text-bright-pink
+                text-accent
                 absolute
                 inset-y-0
                 left-0

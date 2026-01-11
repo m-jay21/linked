@@ -9,6 +9,12 @@ export default {
     state.theme = theme
   },
 
+  [Mutations.SET_THEME_COLORS](state, { theme, colors }) {
+    if (state.themeColors[theme]) {
+      state.themeColors[theme] = { ...state.themeColors[theme], ...colors }
+    }
+  },
+
   [Mutations.SET_UPDATE_INTERVAL](state, interval) {
     state.updateInterval = interval
   },

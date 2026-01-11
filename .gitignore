@@ -26,3 +26,5 @@ pnpm-debug.log*
 /dist_electron
 privateKey
 /package-lock.json
+
+/note_to_self.txt

@@ -19,7 +19,7 @@
         <span
           class="block mb-1 text-xs text-gray-400 dark:text-gray-600"
           :class="{
-            'text-bright-pink dark:text-red-500': date.isoDate === getCurrentDate
+            'text-accent dark:text-accent-dark': date.isoDate === getCurrentDate
           }"
         >
           {{ date.weekDay }}
@@ -38,14 +38,14 @@
               font-black
               text-xs
               cursor-pointer
-              ring-bright-pink
               hover:bg-gray-200
               dark:hover:bg-gray-800
             "
             :class="{
               'ring-4 text-sm mt-1': date.isoDate === getCurrentDate,
-              'text-bright-pink dark:text-red-500': hasContent(date.isoDate)
+              'text-accent dark:text-accent-dark': hasContent(date.isoDate)
             }"
+            :style="date.isoDate === getCurrentDate ? { boxShadow: `0 0 0 4px ${accentColor}` } : {}"
             :key="date.day"
             @click="setDate(date.isoDate)"
           >
@@ -63,6 +63,9 @@ import {
   Getters as CalendarGetters,
   Actions as CalendarActions
 } from '@/store/modules/calendar/types'
+import {
+  Getters as AppGetters
+} from '@/store/modules/app/types'
 
 export default {
   methods: {
@@ -75,14 +78,21 @@ export default {
     },
     checkDaysWithContent() {
       this[CalendarActions.CHECK_DAYS_WITH_CONTENT]()
-    }
+    },
   },
   computed: {
     ...mapGetters('calendar', [
       CalendarGetters.GET_CURRENT_DATE,
       CalendarGetters.GET_CURRENT_WEEK,
       CalendarGetters.GET_DAYS_WITH_CONTENT
-    ])
+    ]),
+    ...mapGetters('app', [AppGetters.GET_THEME_COLORS, AppGetters.GET_THEME]),
+    accentColor() {
+      const colors = this.getThemeColors
+      if (!colors) return '#FF005C'
+      // Use accent-dark for dark mode, accent for light mode
+      return this.getTheme === 'dark' ? colors.accentDark : colors.accent
+    }
   },
   mounted() {
     this.checkDaysWithContent()

@@ -13,6 +13,26 @@ export const getTheme = async () => {
   return ipcRenderer.invoke('GET_STORAGE_VALUE', 'theme')
 }
 
+export const getThemeColors = async () => {
+  const colors = await ipcRenderer.invoke('GET_STORAGE_VALUE', 'themeColors')
+  // Return default colors if none stored
+  if (!colors) {
+    return {
+      light: {
+        accent: '#FF005C',
+        accentHover: '#D1014C',
+        accentDark: '#EF4444'
+      },
+      dark: {
+        accent: '#FF005C',
+        accentHover: '#D1014C',
+        accentDark: '#EF4444'
+      }
+    }
+  }
+  return colors
+}
+
 export const getUpdateInterval = async () => {
   const updateInterval = await ipcRenderer.invoke('GET_STORAGE_VALUE', 'updateInterval')
   return updateInterval === DAILY ? 0 : 1
@@ -33,6 +53,10 @@ export const setTheme = async (theme) => {
   return ipcRenderer.invoke('SET_STORAGE_VALUE', 'theme', theme).then(() => {
     ipcRenderer.invoke('TOGGLE_THEME', theme)
   })
+}
+
+export const setThemeColors = async (colors) => {
+  return ipcRenderer.invoke('SET_STORAGE_VALUE', 'themeColors', colors)
 }
 
 export const setLanguage = async (language) => {
