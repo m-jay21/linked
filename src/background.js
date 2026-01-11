@@ -209,6 +209,8 @@ app.whenReady().then(async () => {
       console.error('Vue Devtools failed to install:', e.toString())
     }
   }
+  // Clean up existing empty files on startup
+  await cleanupEmptyFiles()
   createWindow()
   updater.setupUpdates()
 })
@@ -338,23 +340,15 @@ ipcMain.handle('FETCH_FILE', async (event, args) => {
   const [year, fileName] = args
   const dataPath = getFilePath(year)
   const filePath = `${dataPath}/${fileName}.json`
-  let file
 
-  // create the file if it does not exist yet
-  if (!fs.existsSync(filePath)) {
-    file = fs.promises.mkdir(dataPath, { recursive: true }).then(() => {
-      return fs.promises.writeFile(filePath, getDefaultData()).then(() => {
-        return fs.promises.readFile(filePath, 'utf-8').then((data) => {
-          return JSON.parse(data)
-        })
-      })
-    })
+  // Only read if file exists, don't create empty files
+  if (fs.existsSync(filePath)) {
+    const data = await fs.promises.readFile(filePath, 'utf-8')
+    return JSON.parse(data)
   } else {
-    file = fs.promises.readFile(filePath, 'utf-8').then(data => JSON.parse(data))
+    // Return default data without creating file
+    return { content: '', rating: 0 }
   }
-
-  // return the file
-  return file
 })
 
 import { Document } from 'flexsearch'
@@ -400,25 +394,38 @@ const retrieveIndex = async () => {
 }
 
 
-ipcMain.handle('SAVE_FILE', (event, args) => {
+ipcMain.handle('SAVE_FILE', async (event, args) => {
   const [year, fileName, content, rating] = args
-  const dataPath = getFilePath(year, fileName)
+  const dataPath = getFilePath(year)
   const filePath = `${dataPath}/${fileName}.json`
   
-  searchIndex.update(fileName, {
-    date: fileName, 
-    content: tokenizer(content)
-  })
-
-  fs.promises.writeFile(
-    filePath,
-    JSON.stringify({
-      content: content,
-      rating: rating
-    })
-  )
+  const isEmpty = isContentEmpty(content)
   
-  exportIndex()
+  if (isEmpty) {
+    // Delete file if it exists and content is empty
+    if (fs.existsSync(filePath)) {
+      await fs.promises.unlink(filePath)
+      // Remove from search index
+      searchIndex.remove(fileName)
+      await exportIndex()
+    }
+  } else {
+    // Only write if content exists
+    await fs.promises.mkdir(dataPath, { recursive: true })
+    await fs.promises.writeFile(
+      filePath,
+      JSON.stringify({
+        content: content,
+        rating: rating
+      })
+    )
+    
+    searchIndex.update(fileName, {
+      date: fileName, 
+      content: tokenizer(content)
+    })
+    await exportIndex()
+  }
 })
 
 ipcMain.handle('SEARCH', async (event, search) => {
@@ -451,6 +458,101 @@ ipcMain.handle('SEARCH', async (event, search) => {
 
 ipcMain.handle('LOAD_SEARCH_INDEX', async () => {
   return retrieveIndex()
+})
+
+/**
+ * Checks if content is empty (no meaningful text)
+ * @param {string} content
+ * @returns {boolean}
+ */
+const isContentEmpty = (content) => {
+  if (!content) return true
+  // Strip HTML tags and check if remaining text is empty
+  const textOnly = content.replace(/(<([^>]+)>)/gi, '').trim()
+  return textOnly.length === 0
+}
+
+/**
+ * Cleans up existing empty files from the data directory
+ * This is a one-time migration to remove empty files created before this feature
+ */
+const cleanupEmptyFiles = async () => {
+  // Load search index first so we can remove entries from it
+  await retrieveIndex()
+  
+  const isYearFolder = (folder) => /\b\d{4}\b/g.test(folder)
+  const dataPath = global.storage.get('dataPath')
+  
+  if (!fs.existsSync(dataPath)) return
+  
+  const getYearFolderFiles = (year) =>
+    fs.promises.readdir(getFilePath(year))
+      .then((files) => files.map((file) => `${year}/${file}`))
+      .catch(() => []) // Handle case where year folder doesn't exist
+  
+  let years = []
+  try {
+    years = await fs.promises.readdir(dataPath)
+      .then((folders) => folders.filter(isYearFolder))
+  } catch (e) {
+    // Directory might not exist yet
+    return
+  }
+  
+  if (years.length === 0) return
+  
+  const allFiles = await Promise.all(years.map(getYearFolderFiles))
+    .then((yearFiles) => yearFiles.flat())
+    .then((files) => files.filter(file => file.match(/^(.*\.json$).*$/)))
+  
+  let deletedCount = 0
+  
+  for (const file of allFiles) {
+    const filePath = `${dataPath}/${file}`
+    try {
+      const data = JSON.parse(fs.readFileSync(filePath, 'utf8'))
+      if (isContentEmpty(data.content)) {
+        await fs.promises.unlink(filePath)
+        const fileName = file.substring(5).slice(0, -5) // Extract date from path (e.g., "2024/2024-01-05.json" -> "2024-01-05")
+        searchIndex.remove(fileName)
+        deletedCount++
+      }
+    } catch (e) {
+      console.error(`Error processing ${filePath}:`, e)
+    }
+  }
+  
+  if (deletedCount > 0) {
+    await exportIndex()
+    console.log(`Cleaned up ${deletedCount} empty file(s)`)
+  }
+}
+
+ipcMain.handle('CHECK_DAYS_WITH_CONTENT', async (event, args) => {
+  const dates = args // array of date strings in YYYY-MM-DD format
+  const daysWithContent = []
+  
+  for (const date of dates) {
+    const year = date.substring(0, 4)
+    const dataPath = getFilePath(year)
+    const filePath = `${dataPath}/${date}.json`
+    
+    if (fs.existsSync(filePath)) {
+      try {
+        const data = await fs.promises.readFile(filePath, 'utf-8')
+        const file = JSON.parse(data)
+        
+        // Check if content is not empty
+        if (!isContentEmpty(file.content)) {
+          daysWithContent.push(date)
+        }
+      } catch (e) {
+        console.error(`Error reading file ${filePath}:`, e)
+      }
+    }
+  }
+  
+  return daysWithContent
 })
 
 /**

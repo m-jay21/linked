@@ -71,6 +71,11 @@ export default {
         this.setCurrentWeek()
       }
 
+      if (mutation.type === `calendar/${CalendarActions.SET_CURRENT_WEEK}`) {
+        // Trigger check for days with content when week changes
+        this.$store.dispatch(`calendar/${CalendarActions.CHECK_DAYS_WITH_CONTENT}`)
+      }
+
       if (mutation.type === `app/${AppActions.SET_THEME}`) {
         if (this.getTheme === 'dark') {
           document.documentElement.classList.add('dark')

@@ -24,31 +24,34 @@
         >
           {{ date.weekDay }}
         </span>
-        <span
-          class="
-            flex
-            justify-center
-            items-center
-            self-center
-            text-center
-            w-10
-            h-10
-            rounded-full
-            font-black
-            text-xs
-            hover:bg-gray-200
-            dark:hover:bg-gray-800
-            cursor-pointer
-            ring-bright-pink
-          "
-          :class="{
-            'ring-4 text-sm': date.isoDate === getCurrentDate
-          }"
-          :key="date.day"
-          @click="setDate(date.isoDate)"
-        >
-          {{ date.day }}
-        </span>
+        <div class="flex flex-col items-center">
+          <span
+            class="
+              flex
+              justify-center
+              items-center
+              self-center
+              text-center
+              w-10
+              h-10
+              rounded-full
+              font-black
+              text-xs
+              cursor-pointer
+              ring-bright-pink
+              hover:bg-gray-200
+              dark:hover:bg-gray-800
+            "
+            :class="{
+              'ring-4 text-sm': date.isoDate === getCurrentDate,
+              'text-bright-pink dark:text-red-500': hasContent(date.isoDate)
+            }"
+            :key="date.day"
+            @click="setDate(date.isoDate)"
+          >
+            {{ date.day }}
+          </span>
+        </div>
       </div>
     </template>
   </div>
@@ -63,13 +66,31 @@ import {
 
 export default {
   methods: {
-    ...mapActions('calendar', [CalendarActions.SET_DATE])
+    ...mapActions('calendar', [
+      CalendarActions.SET_DATE,
+      CalendarActions.CHECK_DAYS_WITH_CONTENT
+    ]),
+    hasContent(date) {
+      return this.getDaysWithContent.includes(date)
+    },
+    checkDaysWithContent() {
+      this[CalendarActions.CHECK_DAYS_WITH_CONTENT]()
+    }
   },
   computed: {
     ...mapGetters('calendar', [
       CalendarGetters.GET_CURRENT_DATE,
-      CalendarGetters.GET_CURRENT_WEEK
+      CalendarGetters.GET_CURRENT_WEEK,
+      CalendarGetters.GET_DAYS_WITH_CONTENT
     ])
+  },
+  mounted() {
+    this.checkDaysWithContent()
+  },
+  watch: {
+    getCurrentWeek() {
+      this.checkDaysWithContent()
+    }
   }
 }
 </script>
