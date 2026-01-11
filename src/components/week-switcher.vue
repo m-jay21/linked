@@ -45,6 +45,21 @@
       >
         <ArrowRightIcon />
       </span>
+      <button
+        class="
+          p-1
+          rounded
+          text-bright-pink
+          dark:text-red-500
+          hover:bg-gray-200
+          dark:hover:bg-gray-800
+          cursor-pointer
+          ml-2
+        "
+        @click="openSettings"
+      >
+        <SettingsIcon />
+      </button>
     </span>
     <month-calendar-modal
       :is-open="isCalendarOpen"
@@ -56,6 +71,7 @@
 <script>
 import ArrowLeftIcon from '@/assets/icons/arrow-left.svg'
 import ArrowRightIcon from '@/assets/icons/arrow-right.svg'
+import SettingsIcon from '@/assets/icons/settings.svg'
 import MonthCalendarModal from '@/components/month-calendar-modal'
 
 import { formatDate } from '@/store/modules/calendar/helper'
@@ -69,6 +85,7 @@ export default {
   components: {
     ArrowLeftIcon,
     ArrowRightIcon,
+    SettingsIcon,
     MonthCalendarModal
   },
   data() {
@@ -84,6 +101,9 @@ export default {
     },
     closeCalendar() {
       this.isCalendarOpen = false
+    },
+    openSettings() {
+      this.$router.push('settings')
     }
   },
   computed: {

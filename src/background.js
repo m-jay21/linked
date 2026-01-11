@@ -157,8 +157,8 @@ const template = [
   }
 ]
 
-const menu = Menu.buildFromTemplate(template)
-Menu.setApplicationMenu(menu)
+// Menu bar removed - settings accessible via UI button
+Menu.setApplicationMenu(null)
 
 const createWindow = () => {
   win = new BrowserWindow({
@@ -168,6 +168,7 @@ const createWindow = () => {
     minHeight: 450,
     title: 'linked',
     backgroundColor: '#161616',
+    autoHideMenuBar: true,
     webPreferences: {
       devTools: process.env.NODE_ENV === 'development',
       nodeIntegration: true,
