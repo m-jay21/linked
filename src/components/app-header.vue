@@ -12,19 +12,19 @@
       color: themeText
     }"
   >
-    <week-switcher />
+    <month-header />
     <day-switcher />
   </header>
 </template>
 
 <script>
 import DaySwitcher from '@/components/day-switcher'
-import WeekSwitcher from '@/components/week-switcher'
+import MonthHeader from '@/components/month-header'
 import { mapGetters } from 'vuex'
 import { Getters as AppGetters } from '@/store/modules/app/types'
 
 export default {
-  components: { DaySwitcher, WeekSwitcher },
+  components: { DaySwitcher, MonthHeader },
   computed: {
     ...mapGetters('app', [AppGetters.GET_THEME, AppGetters.GET_THEME_COLORS]),
     themeBg() {

@@ -6,7 +6,7 @@
     >{{
       formatDate(getCurrentDate, 'MMMM yyyy')
     }}</span>
-    <!-- Week switcher -->
+    <!-- Calendar and Settings buttons -->
     <span
       class="
         select-none
@@ -16,39 +16,21 @@
         align-center
         gap-1
       "
-      :style="{ color: themeText }"
     >
-      <span
-        class="cursor-pointer"
-        :style="{ color: arrowColor }"
-        @click="setDayTo(-7)"
-      >
-        <ArrowLeftIcon />
-      </span>
       <button
         class="
-          px-2
-          py-1
+          p-1
           rounded
           text-accent
           dark:text-accent-dark
           hover:bg-gray-200
           dark:hover:bg-gray-800
           cursor-pointer
-          font-black
-          text-sm
         "
         @click="openCalendar"
       >
-        Calendar
+        <CalendarIcon />
       </button>
-      <span
-        class="cursor-pointer"
-        :style="{ color: arrowColor }"
-        @click="setDayTo(7)"
-      >
-        <ArrowRightIcon />
-      </span>
       <button
         class="
           p-1
@@ -73,15 +55,13 @@
 </template>
 
 <script>
-import ArrowLeftIcon from '@/assets/icons/arrow-left.svg'
-import ArrowRightIcon from '@/assets/icons/arrow-right.svg'
 import SettingsIcon from '@/assets/icons/settings.svg'
+import CalendarIcon from '@/assets/icons/calendar.svg'
 import MonthCalendarModal from '@/components/month-calendar-modal'
 
 import { formatDate } from '@/store/modules/calendar/helper'
-import { mapActions, mapGetters } from 'vuex'
+import { mapGetters } from 'vuex'
 import {
-  Actions as CalendarActions,
   Getters as CalendarGetters
 } from '@/store/modules/calendar/types'
 import {
@@ -90,9 +70,8 @@ import {
 
 export default {
   components: {
-    ArrowLeftIcon,
-    ArrowRightIcon,
     SettingsIcon,
+    CalendarIcon,
     MonthCalendarModal
   },
   data() {
@@ -102,7 +81,6 @@ export default {
   },
   methods: {
     formatDate,
-    ...mapActions('calendar', [CalendarActions.SET_DAY_TO]),
     openCalendar() {
       this.isCalendarOpen = true
     },
@@ -116,11 +94,6 @@ export default {
   computed: {
     ...mapGetters('calendar', [CalendarGetters.GET_CURRENT_DATE]),
     ...mapGetters('app', [AppGetters.GET_THEME_COLORS, AppGetters.GET_THEME]),
-    arrowColor() {
-      const colors = this.getThemeColors
-      if (!colors) return '#FF005C'
-      return this.getTheme === 'dark' ? colors.accentDark : colors.accent
-    },
     themeText() {
       const theme = this.getTheme
       if (theme === 'caelestia') {
@@ -132,3 +105,4 @@ export default {
   }
 }
 </script>
+
