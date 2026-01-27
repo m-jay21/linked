@@ -31,9 +31,6 @@ module.exports = {
         },
         linux: {
           target: [
-            'deb',
-            'rpm',
-            'pacman',
             'AppImage'
           ]
         },
