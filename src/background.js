@@ -32,8 +32,8 @@ export const DAILY = 1000 * 60 * 60 * 24
 export const WEEKLY = DAILY * 7
 const basePath = path.join(app.getPath('documents'), 'linked')
 
-// Caelestia theme path
-const CAELESTIA_THEME_PATH = '/home/mjay21/.config/btop/themes/caelestia.theme'
+// Default Caelestia theme path (fallback)
+const DEFAULT_CAELESTIA_THEME_PATH = '/home/mjay21/.config/btop/themes/caelestia.theme'
 
 const Store = require('electron-store')
 global.storage = new Store({
@@ -47,9 +47,15 @@ global.storage = new Store({
     enableUpdates: true,
     updateInterval: DAILY,
     dataPath: basePath,
-    allowPrerelease: false
+    allowPrerelease: false,
+    customThemePath: DEFAULT_CAELESTIA_THEME_PATH
   }
 })
+
+// Helper to get current custom theme path
+const getCustomThemePath = () => {
+  return global.storage.get('customThemePath') || DEFAULT_CAELESTIA_THEME_PATH
+}
 
 import updater from './updater'
 
@@ -473,38 +479,104 @@ const { parseBtopTheme, mapBtopToAppColors } = require('./utils/btopThemeParser'
 // Read and parse btop theme
 ipcMain.handle('READ_CAELESTIA_THEME', async () => {
   try {
-    if (!fs.existsSync(CAELESTIA_THEME_PATH)) {
-      console.warn('Caelestia theme file not found:', CAELESTIA_THEME_PATH)
+    const themePath = getCustomThemePath()
+    if (!fs.existsSync(themePath)) {
+      console.warn('Custom theme file not found:', themePath)
       return null
     }
-    const content = await fs.promises.readFile(CAELESTIA_THEME_PATH, 'utf-8')
+    const content = await fs.promises.readFile(themePath, 'utf-8')
     const btopColors = parseBtopTheme(content)
     return mapBtopToAppColors(btopColors)
   } catch (error) {
-    console.error('Error reading Caelestia theme:', error)
+    console.error('Error reading custom theme:', error)
     return null
   }
 })
 
+// Get custom theme path
+ipcMain.handle('GET_CUSTOM_THEME_PATH', async () => {
+  return getCustomThemePath()
+})
+
+// Set custom theme path
+ipcMain.handle('SET_CUSTOM_THEME_PATH', async () => {
+  const result = await dialog.showOpenDialog(win, {
+    properties: ['openFile'],
+    filters: [
+      { name: 'Btop Theme Files', extensions: ['theme'] },
+      { name: 'All Files', extensions: ['*'] }
+    ]
+  })
+  
+  if (result.canceled === true) {
+    return getCustomThemePath()
+  }
+
+  const newPath = result.filePaths.length > 0 ? result.filePaths[0] : getCustomThemePath()
+  
+  // Validate file exists
+  if (!fs.existsSync(newPath)) {
+    await dialog.showMessageBox(win, {
+      message: 'File not found!',
+      detail: `The selected file does not exist: ${newPath}`,
+      type: 'error',
+      buttons: ['Close'],
+      defaultId: 0,
+      noLink: true
+    })
+    return getCustomThemePath()
+  }
+
+  // Store the new path
+  global.storage.set('customThemePath', newPath)
+  
+  // Reinitialize watcher with new path
+  setupThemeWatcher()
+  
+  // If custom theme is active, reload it
+  if (global.storage.get('theme') === 'caelestia') {
+    const content = await fs.promises.readFile(newPath, 'utf-8')
+    const btopColors = parseBtopTheme(content)
+    const colors = mapBtopToAppColors(btopColors)
+    if (win && !win.isDestroyed() && colors) {
+      win.webContents.send('caelestia-theme-updated', colors)
+    }
+  }
+  
+  new Notification({
+    title: 'Custom theme path updated!',
+    body: `Theme file set to: ${newPath}`
+  }).show()
+
+  return newPath
+})
+
 // Watch theme file for changes
 let themeWatcher = null
+let watchedPath = null
 
 const setupThemeWatcher = () => {
-  if (!fs.existsSync(CAELESTIA_THEME_PATH)) {
-    console.warn('Caelestia theme file not found, skipping watcher')
+  const themePath = getCustomThemePath()
+  if (!fs.existsSync(themePath)) {
+    console.warn('Custom theme file not found, skipping watcher:', themePath)
     return
   }
   
-  if (themeWatcher) {
-    fs.unwatchFile(CAELESTIA_THEME_PATH, themeWatcher)
+  // Unwatch previous path if different
+  if (themeWatcher && watchedPath && watchedPath !== themePath) {
+    fs.unwatchFile(watchedPath, themeWatcher)
+    themeWatcher = null
   }
   
-  themeWatcher = fs.watchFile(CAELESTIA_THEME_PATH, { interval: 1000 }, async (curr, prev) => {
+  // Watch new path
+  watchedPath = themePath
+  themeWatcher = fs.watchFile(themePath, { interval: 1000 }, async (curr, prev) => {
     if (curr.mtime !== prev.mtime) {
       // File changed, notify renderer
       try {
-        if (!fs.existsSync(CAELESTIA_THEME_PATH)) return
-        const content = await fs.promises.readFile(CAELESTIA_THEME_PATH, 'utf-8')
+        const currentPath = getCustomThemePath()
+        if (!fs.existsSync(currentPath)) return
+        const content = await fs.promises.readFile(currentPath, 'utf-8')
         const btopColors = parseBtopTheme(content)
         const colors = mapBtopToAppColors(btopColors)
         if (win && !win.isDestroyed() && colors) {
@@ -516,7 +588,7 @@ const setupThemeWatcher = () => {
     }
   })
   
-  console.log('Caelestia theme watcher initialized')
+  console.log('Custom theme watcher initialized for:', themePath)
 }
 
 /**

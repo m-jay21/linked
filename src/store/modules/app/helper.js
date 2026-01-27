@@ -101,6 +101,14 @@ export const setDataPath = () => {
   return ipcRenderer.invoke('SET_DATA_PATH')
 }
 
+export const getCustomThemePath = () => {
+  return ipcRenderer.invoke('GET_CUSTOM_THEME_PATH')
+}
+
+export const setCustomThemePath = () => {
+  return ipcRenderer.invoke('SET_CUSTOM_THEME_PATH')
+}
+
 export const setAllowPrerelease = async (value) => {
   return ipcRenderer.invoke('SET_STORAGE_VALUE', 'allowPrerelease', value)
 }
