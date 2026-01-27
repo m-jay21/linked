@@ -8,6 +8,7 @@
   --accent-dark: #EF4444;
   --theme-bg: #ffffff;
   --theme-text: #000000;
+  --font-family: system-ui, -apple-system, sans-serif;
 }
 
 .dark {

@@ -15,6 +15,7 @@ import {
   Getters as AppGetters,
   Actions as AppActions
 } from '@/store/modules/app/types'
+import { getFontFamily } from '@/store/modules/app/helper'
 
 const { ipcRenderer } = require('electron')
 
@@ -57,6 +58,12 @@ export default {
             document.documentElement.style.setProperty('--theme-text', '#000000')
           }
         }
+      }
+    },
+    async updateFontFamily() {
+      const fontFamily = await getFontFamily()
+      if (fontFamily) {
+        document.documentElement.style.setProperty('--font-family', fontFamily)
       }
     }
   },
@@ -128,6 +135,8 @@ export default {
     }
     // Initialize accent colors
     this.updateAccentColors()
+    // Initialize font family
+    this.updateFontFamily()
     
     // Listen for Caelestia theme file changes
     ipcRenderer.on('caelestia-theme-updated', async (event, colors) => {

@@ -11,6 +11,10 @@
       "title": "Design mode",
       "hint": "You can choose between a light and dark mode."
     },
+    "font": {
+      "title": "Font",
+      "hint": "Choose your preferred font family."
+    },
     "languages": {
       "title": "Language",
       "hint": "In which language do you prefer to use linked?"

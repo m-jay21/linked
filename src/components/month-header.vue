@@ -6,7 +6,7 @@
     >{{
       formatDate(getCurrentDate, 'MMMM yyyy')
     }}</span>
-    <!-- Calendar and Settings buttons -->
+    <!-- Font, Calendar and Settings buttons -->
     <span
       class="
         select-none
@@ -17,23 +17,10 @@
         gap-1
       "
     >
+      <font-picker-button />
       <button
         class="
-          p-1
-          rounded
-          text-accent
-          dark:text-accent-dark
-          hover:bg-gray-200
-          dark:hover:bg-gray-800
-          cursor-pointer
-        "
-        @click="openCalendar"
-      >
-        <CalendarIcon />
-      </button>
-      <button
-        class="
-          p-1
+          p-2
           rounded
           text-accent
           dark:text-accent-dark
@@ -41,6 +28,20 @@
           dark:hover:bg-gray-800
           cursor-pointer
           ml-2
+        "
+        @click="openCalendar"
+      >
+        <CalendarIcon />
+      </button>
+      <button
+        class="
+          p-2
+          rounded
+          text-accent
+          dark:text-accent-dark
+          hover:bg-gray-200
+          dark:hover:bg-gray-800
+          cursor-pointer
         "
         @click="openSettings"
       >
@@ -58,6 +59,7 @@
 import SettingsIcon from '@/assets/icons/settings.svg'
 import CalendarIcon from '@/assets/icons/calendar.svg'
 import MonthCalendarModal from '@/components/month-calendar-modal'
+import FontPickerButton from '@/components/font-picker-button'
 
 import { formatDate } from '@/store/modules/calendar/helper'
 import { mapGetters } from 'vuex'
@@ -72,7 +74,8 @@ export default {
   components: {
     SettingsIcon,
     CalendarIcon,
-    MonthCalendarModal
+    MonthCalendarModal,
+    FontPickerButton
   },
   data() {
     return {

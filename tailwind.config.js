@@ -15,6 +15,9 @@ module.exports = {
         'accent-hover': 'var(--accent-hover)',
         'accent-dark': 'var(--accent-dark)',
         'secondary-black': '#1f1f1f'
+      },
+      fontFamily: {
+        'sans': ['var(--font-family)']
       }
     },
     colors: {

@@ -42,6 +42,7 @@ global.storage = new Store({
     isSetupFinished: false,
     language: 'en-US',
     theme: 'dark',
+    fontFamily: 'system-ui, -apple-system, sans-serif',
     searchMode: 'forward',
     enableUpdates: true,
     updateInterval: DAILY,

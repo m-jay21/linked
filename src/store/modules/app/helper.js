@@ -63,6 +63,10 @@ export const getAllowPrerelease = async () => {
   return ipcRenderer.invoke('GET_STORAGE_VALUE', 'allowPrerelease')
 }
 
+export const getFontFamily = async () => {
+  return ipcRenderer.invoke('GET_STORAGE_VALUE', 'fontFamily')
+}
+
 /* 
  * Electron Storage Setters
  */
@@ -103,4 +107,8 @@ export const setAllowPrerelease = async (value) => {
 
 export const readCaelestiaTheme = async () => {
   return ipcRenderer.invoke('READ_CAELESTIA_THEME')
+}
+
+export const setFontFamily = async (fontFamily) => {
+  return ipcRenderer.invoke('SET_STORAGE_VALUE', 'fontFamily', fontFamily)
 }
