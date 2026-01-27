@@ -87,30 +87,80 @@
       role="listbox"
       v-if="open"
     >
-      <template v-for="(font, index) in filteredFonts">
-        <li
-          class="cursor-default select-none relative py-2 pl-8 pr-4"
-          :id="`listbox-option-${index}`"
-          role="option"
-          :key="index"
-          @click="_handleFontChange(font.value, font.name)"
-          @mouseenter="_handleMouseEnter"
-          @mouseleave="_handleMouseLeave"
-          :style="{
-            fontFamily: font.value,
-            backgroundColor: currentFont === font.value ? hoverBg : 'transparent'
+      <!-- System Fonts Section -->
+      <template v-if="groupedFilteredFonts.system.length > 0">
+        <li 
+          class="px-3 py-1 text-xs font-semibold sticky top-0" 
+          :style="{ 
+            backgroundColor: dropdownBg,
+            color: iconColor 
           }"
-          :data-font-value="font.value"
         >
-          <span class="font-normal block truncate">{{ font.name }}</span>
-          <span
-            class="absolute inset-y-0 left-0 flex items-center pl-1.5"
-            :style="{ color: accentColor }"
-            v-if="currentFont === font.value"
-          >
-            <TickIcon />
-          </span>
+          System Fonts
         </li>
+        <template v-for="(font, index) in groupedFilteredFonts.system">
+          <li
+            class="cursor-default select-none relative py-2 pl-8 pr-4"
+            :id="`listbox-option-system-${index}`"
+            role="option"
+            :key="`system-${index}`"
+            @click="_handleFontChange(font.value, font.name, font.googleName)"
+            @mouseenter="_handleMouseEnter"
+            @mouseleave="_handleMouseLeave"
+            :style="{
+              fontFamily: font.value,
+              backgroundColor: currentFont === font.value ? hoverBg : 'transparent'
+            }"
+            :data-font-value="font.value"
+          >
+            <span class="font-normal block truncate">{{ font.name }}</span>
+            <span
+              class="absolute inset-y-0 left-0 flex items-center pl-1.5"
+              :style="{ color: accentColor }"
+              v-if="currentFont === font.value"
+            >
+              <TickIcon />
+            </span>
+          </li>
+        </template>
+      </template>
+      
+      <!-- Google Fonts Section -->
+      <template v-if="groupedFilteredFonts.google.length > 0">
+        <li 
+          class="px-3 py-1 text-xs font-semibold sticky top-0 mt-1" 
+          :style="{ 
+            backgroundColor: dropdownBg,
+            color: iconColor 
+          }"
+        >
+          Google Fonts
+        </li>
+        <template v-for="(font, index) in groupedFilteredFonts.google">
+          <li
+            class="cursor-default select-none relative py-2 pl-8 pr-4"
+            :id="`listbox-option-google-${index}`"
+            role="option"
+            :key="`google-${index}`"
+            @click="_handleFontChange(font.value, font.name, font.googleName)"
+            @mouseenter="_handleMouseEnter"
+            @mouseleave="_handleMouseLeave"
+            :style="{
+              fontFamily: font.value,
+              backgroundColor: currentFont === font.value ? hoverBg : 'transparent'
+            }"
+            :data-font-value="font.value"
+          >
+            <span class="font-normal block truncate">{{ font.name }}</span>
+            <span
+              class="absolute inset-y-0 left-0 flex items-center pl-1.5"
+              :style="{ color: accentColor }"
+              v-if="currentFont === font.value"
+            >
+              <TickIcon />
+            </span>
+          </li>
+        </template>
       </template>
     </ul>
   </div>
@@ -131,25 +181,27 @@ export default {
       currentFont: 'system-ui, -apple-system, sans-serif',
       currentFontName: 'System',
       inputWidth: '7rem',
-      fonts: [
+      systemFonts: [
         { name: 'System', value: 'system-ui, -apple-system, sans-serif' },
-        { name: 'Inter', value: 'Inter, system-ui, sans-serif' },
-        { name: 'Roboto', value: 'Roboto, sans-serif' },
-        { name: 'Open Sans', value: 'Open Sans, sans-serif' },
-        { name: 'Lato', value: 'Lato, sans-serif' },
-        { name: 'Montserrat', value: 'Montserrat, sans-serif' },
-        { name: 'Source Sans Pro', value: 'Source Sans Pro, sans-serif' },
-        { name: 'Raleway', value: 'Raleway, sans-serif' },
-        { name: 'Poppins', value: 'Poppins, sans-serif' },
-        { name: 'Nunito', value: 'Nunito, sans-serif' },
-        { name: 'Merriweather', value: 'Merriweather, serif' },
-        { name: 'Lora', value: 'Lora, serif' },
-        { name: 'Playfair Display', value: 'Playfair Display, serif' },
         { name: 'Georgia', value: 'Georgia, serif' },
         { name: 'Times New Roman', value: 'Times New Roman, serif' },
         { name: 'Courier New', value: 'Courier New, monospace' },
         { name: 'Monaco', value: 'Monaco, monospace' },
         { name: 'Consolas', value: 'Consolas, monospace' }
+      ],
+      googleFonts: [
+        { name: 'Inter', value: 'Inter, system-ui, sans-serif', googleName: 'Inter' },
+        { name: 'Roboto', value: 'Roboto, sans-serif', googleName: 'Roboto' },
+        { name: 'Open Sans', value: 'Open Sans, sans-serif', googleName: 'Open+Sans' },
+        { name: 'Lato', value: 'Lato, sans-serif', googleName: 'Lato' },
+        { name: 'Montserrat', value: 'Montserrat, sans-serif', googleName: 'Montserrat' },
+        { name: 'Source Sans Pro', value: 'Source Sans Pro, sans-serif', googleName: 'Source+Sans+Pro' },
+        { name: 'Raleway', value: 'Raleway, sans-serif', googleName: 'Raleway' },
+        { name: 'Poppins', value: 'Poppins, sans-serif', googleName: 'Poppins' },
+        { name: 'Nunito', value: 'Nunito, sans-serif', googleName: 'Nunito' },
+        { name: 'Merriweather', value: 'Merriweather, serif', googleName: 'Merriweather' },
+        { name: 'Lora', value: 'Lora, serif', googleName: 'Lora' },
+        { name: 'Playfair Display', value: 'Playfair Display, serif', googleName: 'Playfair+Display' }
       ]
     }
   },
@@ -161,14 +213,26 @@ export default {
       }
       return this.currentFontName
     },
+    allFonts() {
+      return [
+        ...this.systemFonts.map(f => ({ ...f, category: 'system' })),
+        ...this.googleFonts.map(f => ({ ...f, category: 'google' }))
+      ]
+    },
     filteredFonts() {
       if (!this.searchQuery.trim()) {
-        return this.fonts
+        return this.allFonts
       }
       const query = this.searchQuery.toLowerCase().trim()
-      return this.fonts.filter(font => 
+      return this.allFonts.filter(font => 
         font.name.toLowerCase().includes(query)
       )
+    },
+    groupedFilteredFonts() {
+      const filtered = this.filteredFonts
+      const system = filtered.filter(f => f.category === 'system')
+      const google = filtered.filter(f => f.category === 'google')
+      return { system, google }
     },
     inputBg() {
       const theme = this.getTheme
@@ -246,8 +310,27 @@ export default {
     }
   },
   methods: {
-    async _handleFontChange(fontValue, fontName) {
+    _loadGoogleFont(googleName) {
+      // Check if font is already loaded
+      const linkId = `google-font-${googleName.replace(/\s+/g, '-').toLowerCase()}`
+      if (document.getElementById(linkId)) {
+        return // Already loaded
+      }
+      
+      // Create link element to load Google Font
+      const link = document.createElement('link')
+      link.id = linkId
+      link.rel = 'stylesheet'
+      link.href = `https://fonts.googleapis.com/css2?family=${googleName}:wght@400;500;600;700&display=swap`
+      document.head.appendChild(link)
+    },
+    async _handleFontChange(fontValue, fontName, googleName) {
       if (this.currentFont === fontValue) return
+
+      // Load Google Font if it's a Google font
+      if (googleName) {
+        this._loadGoogleFont(googleName)
+      }
 
       this.currentFont = fontValue
       this.currentFontName = fontName
@@ -262,9 +345,15 @@ export default {
       const font = await getFontFamily()
       if (font) {
         this.currentFont = font
-        // Find matching font name
-        const fontObj = this.fonts.find(f => f.value === font)
+        // Find matching font name in both arrays
+        const fontObj = this.allFonts.find(f => f.value === font)
         this.currentFontName = fontObj ? fontObj.name : 'System'
+        
+        // Load Google Font if it's a Google font
+        if (fontObj && fontObj.googleName) {
+          this._loadGoogleFont(fontObj.googleName)
+        }
+        
         this.$nextTick(() => {
           this._updateInputWidth()
         })
@@ -302,7 +391,7 @@ export default {
     _handleEnter() {
       if (this.filteredFonts.length > 0) {
         const firstMatch = this.filteredFonts[0]
-        this._handleFontChange(firstMatch.value, firstMatch.name)
+        this._handleFontChange(firstMatch.value, firstMatch.name, firstMatch.googleName)
       }
     },
     _handleEscape() {
