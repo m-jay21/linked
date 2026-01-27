@@ -23,5 +23,6 @@ export default () => ({
   },
   updateInterval: null,
   dataPath: null,
-  allowPrerelease: null
+  allowPrerelease: null,
+  isSettingsModalOpen: false
 })

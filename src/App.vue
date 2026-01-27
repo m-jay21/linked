@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters, mapActions, mapMutations } from 'vuex'
 
 import {
   Getters as CalendarGetters,
@@ -13,7 +13,8 @@ import {
 import { Actions as FileActions } from '@/store/modules/file/types'
 import {
   Getters as AppGetters,
-  Actions as AppActions
+  Actions as AppActions,
+  Mutations as AppMutations
 } from '@/store/modules/app/types'
 import { getFontFamily } from '@/store/modules/app/helper'
 
@@ -36,6 +37,7 @@ export default {
     ]),
     ...mapActions('file', [FileActions.FETCH_FILE]),
     ...mapActions('app', [AppActions.INIT_APP]),
+    ...mapMutations('app', [AppMutations.SET_SETTINGS_MODAL_OPEN]),
     updateAccentColors() {
       const colors = this.getThemeColors
       const theme = this.getTheme
@@ -69,7 +71,7 @@ export default {
   },
   mounted() {
     ipcRenderer.on('open-settings', () => {
-      this.$router.push('settings', () => {})
+      this.setSettingsModalOpen(true)
     })
 
     ipcRenderer.on('set-today', () => {

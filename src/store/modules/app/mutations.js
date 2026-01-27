@@ -25,5 +25,9 @@ export default {
 
   [Mutations.SET_ALLOW_PRERELEASE](state, allowPrerelease) {
     state.allowPrerelease = allowPrerelease
+  },
+
+  [Mutations.SET_SETTINGS_MODAL_OPEN](state, isOpen) {
+    state.isSettingsModalOpen = isOpen
   }
 }

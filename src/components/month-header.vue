@@ -52,6 +52,10 @@
       :is-open="isCalendarOpen"
       @close="closeCalendar"
     />
+    <settings-modal
+      :is-open="isSettingsOpen"
+      @close="closeSettings"
+    />
   </div>
 </template>
 
@@ -59,15 +63,17 @@
 import SettingsIcon from '@/assets/icons/settings.svg'
 import CalendarIcon from '@/assets/icons/calendar.svg'
 import MonthCalendarModal from '@/components/month-calendar-modal'
+import SettingsModal from '@/components/settings-modal'
 import FontPickerButton from '@/components/font-picker-button'
 
 import { formatDate } from '@/store/modules/calendar/helper'
-import { mapGetters } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 import {
   Getters as CalendarGetters
 } from '@/store/modules/calendar/types'
 import {
-  Getters as AppGetters
+  Getters as AppGetters,
+  Mutations as AppMutations
 } from '@/store/modules/app/types'
 
 export default {
@@ -75,6 +81,7 @@ export default {
     SettingsIcon,
     CalendarIcon,
     MonthCalendarModal,
+    SettingsModal,
     FontPickerButton
   },
   data() {
@@ -91,12 +98,23 @@ export default {
       this.isCalendarOpen = false
     },
     openSettings() {
-      this.$router.push('settings')
-    }
+      this.setSettingsModalOpen(true)
+    },
+    closeSettings() {
+      this.setSettingsModalOpen(false)
+    },
+    ...mapMutations('app', [AppMutations.SET_SETTINGS_MODAL_OPEN])
   },
   computed: {
     ...mapGetters('calendar', [CalendarGetters.GET_CURRENT_DATE]),
-    ...mapGetters('app', [AppGetters.GET_THEME_COLORS, AppGetters.GET_THEME]),
+    ...mapGetters('app', [
+      AppGetters.GET_THEME_COLORS,
+      AppGetters.GET_THEME,
+      AppGetters.GET_SETTINGS_MODAL_OPEN
+    ]),
+    isSettingsOpen() {
+      return this.getSettingsModalOpen
+    },
     themeText() {
       const theme = this.getTheme
       if (theme === 'caelestia') {

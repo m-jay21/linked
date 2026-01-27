@@ -5,7 +5,8 @@ export const Getters = {
   GET_ACCENT_COLOR: 'getAccentColor',
   GET_UPDATE_INTERVAL: 'getUpdateInterval',
   GET_DATA_PATH: 'getDataPath',
-  GET_ALLOW_PRERELEASE: 'getAllowPrerelease'
+  GET_ALLOW_PRERELEASE: 'getAllowPrerelease',
+  GET_SETTINGS_MODAL_OPEN: 'getSettingsModalOpen'
 }
 
 export const Actions = {
@@ -25,5 +26,6 @@ export const Mutations = {
   SET_THEME_COLORS: 'setThemeColors',
   SET_UPDATE_INTERVAL: 'setUpdateInterval',
   SET_DATA_PATH: 'setDataPath',
-  SET_ALLOW_PRERELEASE: 'setAllowPrerelease'
+  SET_ALLOW_PRERELEASE: 'setAllowPrerelease',
+  SET_SETTINGS_MODAL_OPEN: 'setSettingsModalOpen'
 }

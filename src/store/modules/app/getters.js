@@ -32,5 +32,9 @@ export default {
 
   [Getters.GET_ALLOW_PRERELEASE](state) {
     return state.allowPrerelease
+  },
+
+  [Getters.GET_SETTINGS_MODAL_OPEN](state) {
+    return state.isSettingsModalOpen
   }
 }
